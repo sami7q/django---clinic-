@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="max-w-lg mx-auto bg-white rounded-2xl shadow-xl p-10 mt-20 border border-gray-100 text-center">
+
+  <h1 class="text-2xl font-bold text-red-600 mb-4">⚠️ تأكيد حذف الموعد</h1>
+  <p class="text-gray-700 mb-6">
+    هل أنت متأكد أنك تريد حذف الموعد الخاص بـ 
+    <span class="font-semibold">{{ appointment.patient.name }}</span> بتاريخ {{ appointment.date }}؟
+  </p>
+
+  <form method="POST" class="flex justify-center gap-4">
+    {% csrf_token %}
+    <a href="{% url 'appointments:list' %}"
+       class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+       إلغاء
+    </a>
+    <button type="submit"
+            class="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium">
+      حذف نهائي
+    </button>
+  </form>
+
+</div>
+
+{% endblock %}

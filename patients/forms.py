@@ -6,9 +6,25 @@ class PatientForm(forms.ModelForm):
         model = Patient
         fields = ['name', 'age', 'phone', 'diagnosis', 'notes']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'form-input'}),
-            'age': forms.NumberInput(attrs={'class': 'form-input'}),
-            'phone': forms.TextInput(attrs={'class': 'form-input', 'placeholder': '+964...'}),
-            'diagnosis': forms.TextInput(attrs={'class': 'form-input'}),
-            'notes': forms.Textarea(attrs={'class': 'form-textarea'}),
+            'name': forms.TextInput(attrs={
+                'placeholder': 'أدخل اسم المريض',
+                'class': 'w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-lg px-3 py-2 text-gray-800 placeholder-gray-400 transition outline-none'
+            }),
+            'age': forms.NumberInput(attrs={
+                'placeholder': 'العمر',
+                'class': 'w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-lg px-3 py-2 text-gray-800 placeholder-gray-400 transition outline-none'
+            }),
+            'phone': forms.TextInput(attrs={
+                'placeholder': 'رقم الهاتف',
+                'class': 'w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-lg px-3 py-2 text-gray-800 placeholder-gray-400 transition outline-none'
+            }),
+            'diagnosis': forms.TextInput(attrs={
+                'placeholder': 'التشخيص الطبي',
+                'class': 'w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-lg px-3 py-2 text-gray-800 placeholder-gray-400 transition outline-none'
+            }),
+            'notes': forms.Textarea(attrs={
+                'rows': 3,
+                'placeholder': 'أضف ملاحظات إضافية إن وجدت',
+                'class': 'w-full border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-lg px-3 py-2 text-gray-800 placeholder-gray-400 transition outline-none'
+            }),
         }

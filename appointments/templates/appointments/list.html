@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="p-8">
+
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="text-3xl font-bold text-blue-700 flex items-center gap-2">📅 قائمة المواعيد</h1>
+    <a href="{% url 'appointments:create' %}" 
+       class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition">
+       + إضافة موعد جديد
+    </a>
+  </div>
+
+  {% if appointments %}
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {% for appt in appointments %}
+        <div class="bg-white rounded-2xl shadow-md border border-gray-100 p-6 hover:shadow-lg transition">
+
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="text-lg font-semibold text-gray-800 truncate">{{ appt.patient.name }}</h2>
+            <span class="text-sm text-gray-500">{{ appt.date }}</span>
+          </div>
+
+          <p class="text-gray-600">⏰ {{ appt.time }}</p>
+          <p class="text-gray-500 text-sm mb-2">💬 {{ appt.reason|default:"—" }}</p>
+
+          {% if appt.status == 'scheduled' %}
+            <span class="inline-block px-3 py-1 text-sm bg-yellow-100 text-yellow-800 rounded-full">قيد الانتظار</span>
+          {% elif appt.status == 'completed' %}
+            <span class="inline-block px-3 py-1 text-sm bg-green-100 text-green-800 rounded-full">تمت الزيارة</span>
+          {% elif appt.status == 'cancelled' %}
+            <span class="inline-block px-3 py-1 text-sm bg-red-100 text-red-800 rounded-full">ألغيت</span>
+          {% endif %}
+
+          <div class="flex justify-end gap-2 mt-4">
+            <a href="{% url 'appointments:update' appt.id %}" 
+               class="px-3 py-1 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition">
+               ✏️ تعديل
+            </a>
+            <a href="{% url 'appointments:delete' appt.id %}" 
+               class="px-3 py-1 bg-red-50 text-red-700 rounded-lg hover:bg-red-100 transition">
+               🗑️ حذف
+            </a>
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-center text-gray-500 mt-12">لا توجد مواعيد حالياً.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

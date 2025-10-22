@@ -1,84 +1,58 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
+<div class="flex justify-center mt-12">
+  <div class="bg-white shadow-2xl border border-gray-200 rounded-2xl p-8 w-full max-w-lg">
+    <!-- العنوان -->
+    <h2 class="text-2xl font-bold text-center text-blue-700 mb-8 flex items-center justify-center gap-2">
+      <span class="text-3xl">➕</span> 
+      <span>إضافة مريض جديد</span>
+    </h2>
 
-<div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-10 border border-gray-100">
+    <!-- النموذج -->
+    <form method="post" class="space-y-5">
+      {% csrf_token %}
 
-  <!-- العنوان -->
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-2xl font-bold text-blue-700">➕ إضافة مريض جديد</h1>
-    <a href="{% url 'patients:list' %}" 
-       class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
-      ← العودة للقائمة
-    </a>
+      <div>
+        <label class="block text-gray-700 font-medium mb-2">الاسم الكامل</label>
+        {{ form.name }}
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-gray-700 font-medium mb-2">العمر</label>
+          {{ form.age }}
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium mb-2">رقم الهاتف</label>
+          {{ form.phone }}
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-medium mb-2">التشخيص</label>
+        {{ form.diagnosis }}
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-medium mb-2">ملاحظات</label>
+        {{ form.notes }}
+      </div>
+
+      <!-- الأزرار -->
+      <div class="flex justify-between items-center pt-6">
+        <a href="{% url 'patients:list' %}"
+           class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2 rounded-lg font-medium transition">
+          ⬅ العودة للقائمة
+        </a>
+
+        <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition">
+          💾 حفظ المريض
+        </button>
+      </div>
+    </form>
   </div>
-
-  <!-- النموذج -->
-  <form method="POST" class="space-y-5">
-    {% csrf_token %}
-
-    <!-- الاسم -->
-    <div>
-      <label for="name" class="block text-gray-700 font-medium mb-1">الاسم الكامل:</label>
-      {{ form.name }}
-    </div>
-
-    <!-- العمر -->
-    <div>
-      <label for="age" class="block text-gray-700 font-medium mb-1">العمر:</label>
-      {{ form.age }}
-    </div>
-
-    <!-- رقم الهاتف -->
-    <div>
-      <label for="phone" class="block text-gray-700 font-medium mb-1">رقم الهاتف:</label>
-      {{ form.phone }}
-    </div>
-
-    <!-- التشخيص -->
-    <div>
-      <label for="diagnosis" class="block text-gray-700 font-medium mb-1">التشخيص:</label>
-      {{ form.diagnosis }}
-    </div>
-
-    <!-- الملاحظات -->
-    <div>
-      <label for="notes" class="block text-gray-700 font-medium mb-1">ملاحظات:</label>
-      {{ form.notes }}
-    </div>
-
-    <!-- الأزرار -->
-    <div class="flex justify-end gap-3 pt-4">
-      <a href="{% url 'patients:list' %}"
-         class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
-         إلغاء
-      </a>
-      <button type="submit"
-              class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-        حفظ المريض
-      </button>
-    </div>
-  </form>
 </div>
-
-<!-- تحسين شكل الحقول -->
-<style>
-input, textarea, select {
-  width: 100%;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  padding: 0.6rem 0.8rem;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-}
-input:focus, textarea:focus, select:focus {
-  border-color: #2563eb;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-}
-textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-</style>
-
 {% endblock %}

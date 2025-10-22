@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- خلفية داكنة خفيفة تعطي تركيز على البطاقة -->
+<div class="flex justify-center items-center min-h-[80vh] bg-gray-50 px-4">
+
+  <!-- بطاقة التأكيد -->
+  <div class="bg-white shadow-2xl rounded-2xl border border-gray-200 p-8 w-full max-w-md text-center transform transition-all duration-300 hover:scale-[1.01]">
+
+    <!-- أيقونة التحذير -->
+    <div class="mx-auto mb-4 w-16 h-16 flex items-center justify-center rounded-full bg-red-100 text-red-600 text-3xl">
+      ⚠️
+    </div>
+
+    <!-- العنوان -->
+    <h2 class="text-2xl font-bold text-gray-800 mb-3">تأكيد حذف المريض</h2>
+
+    <!-- النص -->
+    <p class="text-gray-600 mb-6 leading-relaxed">
+      هل أنت متأكد أنك تريد حذف المريض
+      <span class="font-semibold text-gray-900">{{ patient.name }}</span>؟
+      <br>
+      <span class="text-sm text-gray-500">لن تتمكن من استرجاع البيانات بعد الحذف.</span>
+    </p>
+
+    <!-- أزرار الإجراء -->
+    <form method="post" action="{% url 'patients:delete' patient.id %}" class="flex flex-col sm:flex-row gap-3 justify-center mt-4">
+      {% csrf_token %}
+      <button type="submit"
+              class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-lg font-semibold transition shadow-sm">
+        🗑️ حذف المريض
+      </button>
+
+      <a href="{% url 'patients:list' %}"
+         class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2.5 rounded-lg font-semibold transition shadow-sm">
+        إلغاء
+      </a>
+    </form>
+
+  </div>
+</div>
+
+{% endblock %}
