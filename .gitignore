@@ -70,3 +70,5 @@ temp/
 *.bak
 *.old
 *.orig
+
+tailwindcss
