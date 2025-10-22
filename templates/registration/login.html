@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}تسجيل الدخول{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-50">
+  <div class="w-full max-w-sm bg-white p-8 rounded-2xl shadow">
+    <h1 class="text-2xl font-bold text-center mb-6 text-gray-800">تسجيل الدخول</h1>
+
+    {% if form.errors %}
+      <div class="mb-4 p-3 rounded bg-red-100 text-red-700 text-sm">
+        اسم المستخدم أو كلمة المرور غير صحيحة.
+      </div>
+    {% endif %}
+
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <label class="block text-sm mb-1 text-gray-700">اسم المستخدم</label>
+        <input type="text" name="username" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required autofocus>
+      </div>
+      <div>
+        <label class="block text-sm mb-1 text-gray-700">كلمة المرور</label>
+        <input type="password" name="password" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+      </div>
+      <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-semibold transition">
+        دخول
+      </button>
+    </form>
+
+    <div class="text-center mt-6 text-sm text-gray-500">
+      <p>نسيت كلمة المرور؟ <a href="{% url 'password_reset' %}" class="text-blue-600 hover:underline">استعادة</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

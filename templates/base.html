@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}نظام إدارة العيادة{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  {% if debug %}<script src="/__reload__/reload.js" defer></script>{% endif %}
+</head>
+
+<body class="min-h-screen bg-gray-50 text-gray-900 flex">
+
+  {% if user.is_authenticated %}
+  <!-- ✅ شريط جانبي -->
+  <aside class="w-64 bg-white border-e h-screen sticky top-0 hidden md:flex flex-col justify-between">
+    <div>
+      <div class="p-4 font-bold text-xl text-blue-700">🏥 IQ Clinic</div>
+      <nav class="px-3 space-y-1">
+        <a href="{% url 'dashboard:home' %}" class="block rounded px-3 py-2 hover:bg-blue-50 text-gray-700">📊 لوحة التحكم</a>
+        <a href="{% url 'patients:list' %}" class="block rounded px-3 py-2 hover:bg-blue-50 text-gray-700">👨‍⚕️ المرضى</a>
+        <a href="{% url 'appointments:list' %}" class="block rounded px-3 py-2 hover:bg-blue-50 text-gray-700">📅 المواعيد</a>
+        <a href="{% url 'invoices:list' %}" class="block rounded px-3 py-2 hover:bg-blue-50 text-gray-700">💰 الفواتير</a>
+        <a href="{% url 'users:list' %}" class="block rounded px-3 py-2 hover:bg-blue-50 text-gray-700">👥 المستخدمون</a>
+      </nav>
+    </div>
+    <div class="p-3 border-t">
+      <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button class="w-full rounded-xl bg-red-500 text-white py-2 hover:bg-red-600">تسجيل الخروج</button>
+      </form>
+    </div>
+  </aside>
+  {% endif %}
+
+  <!-- ✅ المحتوى الرئيسي -->
+  <main class="flex-1 p-6 overflow-y-auto">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+</body>
+</html>

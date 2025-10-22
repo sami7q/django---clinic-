@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}حالة التفعيل{% endblock %}
+{% block header %}حالة التفعيل{% endblock %}
+{% block content %}
+<p class="mb-4">تحقق من حالة الترخيص الحالية.</p>
+{% include "includes/license_badge.html" %}
+<div class="mt-4">
+  <a class="underline" href="{% url 'licensing:activate' %}">إدخال كود جديد</a>
+</div>
+{% endblock %}

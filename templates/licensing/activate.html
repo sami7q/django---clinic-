@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}تفعيل النظام{% endblock %}
+{% block header %}تفعيل النظام{% endblock %}
+{% block content %}
+<form method="post" class="space-y-4 max-w-md bg-white p-6 rounded-2xl shadow">
+  {% csrf_token %}
+  <div>
+    <label class="block text-sm mb-1">كود التفعيل</label>
+    <input name="key" class="w-full border rounded px-3 py-2" required />
+  </div>
+  <button class="rounded-xl px-4 py-2 bg-black text-white">تفعيل</button>
+</form>
+{% endblock %}

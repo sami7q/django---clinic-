@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}اللوحة{% endblock %}
+{% block header %}لوحة التحكم{% endblock %}
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div class="rounded-2xl bg-white p-4 shadow">
+    <div class="text-sm text-gray-500">مرضى اليوم</div>
+    <div class="text-3xl font-bold">{{ stats.patients_today }}</div>
+  </div>
+  <div class="rounded-2xl bg-white p-4 shadow">
+    <div class="text-sm text-gray-500">مواعيد اليوم</div>
+    <div class="text-3xl font-bold">{{ stats.appointments_today }}</div>
+  </div>
+  <div class="rounded-2xl bg-white p-4 shadow">
+    <div class="text-sm text-gray-500">فواتير اليوم</div>
+    <div class="text-3xl font-bold">{{ stats.invoices_today }}</div>
+  </div>
+</div>
+{% endblock %}
