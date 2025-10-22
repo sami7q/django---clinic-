@@ -1,29 +1,23 @@
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.utils.deprecation import MiddlewareMixin
-from django.utils.dateparse import parse_datetime
-from django.utils import timezone
+from licensing.models import LicenseKey
 
-WHITELIST = (
-    "/admin/", "/auth/login", "/auth/logout", "/__reload__/",
-    "/licensing/activate", "/licensing/status",
-    "/static/", "/favicon.ico",
-)
+class LicenseCheckMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
 
-class LicensingCheckMiddleware(MiddlewareMixin):
-    def process_request(self, request):
-        path = request.path
-        if any(path.startswith(p) for p in WHITELIST):
-            return None
-        ok = request.session.get("license_ok", False)
-        exp_str = request.session.get("license_expires")
-        request.license_ok = False
-        request.license_expires = None
-        if exp_str:
-            exp = parse_datetime(exp_str)
-            if exp and timezone.now() <= exp:
-                request.license_ok = ok
-                request.license_expires = exp
-        if not request.license_ok:
-            return redirect(reverse("licensing:activate"))
-        return None
+    def __call__(self, request):
+        excluded_paths = [
+            reverse('licensing:activate'),
+            reverse('admin:index'),
+            '/static/', '/media/', '/auth/login/', '/auth/logout/'
+        ]
+        if any(request.path.startswith(path) for path in excluded_paths):
+            return self.get_response(request)
+
+        key = LicenseKey.objects.first()
+
+        if not key or not key.is_valid():
+            return redirect('licensing:activate')
+
+        return self.get_response(request)

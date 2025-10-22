@@ -1,16 +1,26 @@
 from django.db import models
 from django.utils import timezone
-import uuid
-
-def generate_license_key():
-    return uuid.uuid4().hex
+from datetime import timedelta
 
 class LicenseKey(models.Model):
-    key = models.CharField(max_length=64, unique=True, default=generate_license_key)
-    issued_to = models.CharField(max_length=255, blank=True, default="")
-    issued_at = models.DateTimeField(default=timezone.now)
-    expires_at = models.DateTimeField()
-    is_revoked = models.BooleanField(default=False)
+    code = models.CharField(max_length=100, unique=True)
+    is_active = models.BooleanField(default=False)
+    activated_at = models.DateTimeField(null=True, blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.code} ({'مفعل' if self.is_active else 'منتهي'})"
 
     def is_valid(self):
-        return (not self.is_revoked) and (self.expires_at >= timezone.now())
+        """يتحقق إن كانت الرخصة ما تزال صالحة."""
+        if not self.is_active or not self.expires_at:
+            return False
+        return timezone.now() < self.expires_at
+
+    def activate(self, code):
+        """تفعيل الرخصة لمدة 30 يومًا."""
+        self.code = code
+        self.is_active = True
+        self.activated_at = timezone.now()
+        self.expires_at = timezone.now() + timedelta(days=30)
+        self.save()

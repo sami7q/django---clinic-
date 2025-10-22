@@ -1,11 +1,11 @@
 from django.urls import path
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from . import views
 
-app_name = "patients"
+app_name = 'patients'
 
-@login_required
-def patients_list(request):
-    return render(request, "patients/list.html")
-
-urlpatterns = [ path("", patients_list, name="list") ]
+urlpatterns = [
+    path('', views.patients_list, name='list'),
+    path('create/', views.create_patient, name='create'),
+    path('<int:pk>/view/', views.patient_view, name='view'),
+    path('<int:pk>/delete/', views.delete_patient, name='delete'),
+]

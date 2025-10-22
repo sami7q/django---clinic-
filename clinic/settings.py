@@ -40,7 +40,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 
     # فحص التفعيل (سنضيفه لاحقًا بعد صفحة التفعيل)
-    "licensing.middleware.LicensingCheckMiddleware",
+    "licensing.middleware.LicenseCheckMiddleware",
 ]
 
 ROOT_URLCONF = "clinic.urls"

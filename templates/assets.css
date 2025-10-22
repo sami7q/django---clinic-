@@ -1,1 +1,7 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* تحسينات بسيطة بدون @apply */
+:root { color-scheme: light; }
+html { -webkit-text-size-adjust: 100%; }

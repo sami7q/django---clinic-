@@ -1,29 +1,28 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.utils import timezone
 from .models import LicenseKey
-from .forms import ActivateForm
 
-def status(request):
-    return render(request, "licensing/status.html")
+MASTER_LICENSE_CODE = "IQ-SAMI-CLINIC-2025"
 
 def activate(request):
+    """صفحة تفعيل النظام"""
+    key = LicenseKey.objects.first()
+
+    # ✅ إذا الرخصة موجودة وصالحة → لا داعي لإعادة التفعيل
+    if key and key.is_valid():
+        return redirect("login")
+
+    # 🔄 في حالة إرسال الكود
     if request.method == "POST":
-        form = ActivateForm(request.POST)
-        if form.is_valid():
-            key = form.cleaned_data["key"].strip()
-            try:
-                lic = LicenseKey.objects.get(key=key)
-                if lic.is_valid():
-                    # خزّن الحالة في الجلسة لمرة أولى (بساطة مبدئية)
-                    request.session["license_ok"] = True
-                    request.session["license_expires"] = lic.expires_at.isoformat()
-                    messages.success(request, "تم التفعيل بنجاح.")
-                    return redirect("dashboard:home")
-                else:
-                    messages.error(request, "الكود غير صالح أو منتهي.")
-            except LicenseKey.DoesNotExist:
-                messages.error(request, "الكود غير موجود.")
-    else:
-        form = ActivateForm()
-    return render(request, "licensing/activate.html", {"form": form})
+        code = request.POST.get("code", "").strip()
+
+        if code == MASTER_LICENSE_CODE:
+            if not key:
+                key = LicenseKey.objects.create()
+            key.activate(code)
+            messages.success(request, "✅ تم تفعيل النظام بنجاح لمدة 30 يومًا. يرجى تسجيل الدخول الآن.")
+            return redirect("login")
+        else:
+            messages.error(request, "❌ كود التفعيل غير صالح.")
+
+    return render(request, "licensing/activate.html")

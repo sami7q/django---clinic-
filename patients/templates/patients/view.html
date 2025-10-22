@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="max-w-xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-10 border border-gray-100">
+
+  <!-- العنوان -->
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-blue-700">🩺 بطاقة المريض</h1>
+    <a href="{% url 'patients:list' %}" 
+       class="px-3 py-1.5 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition text-sm">
+      ← العودة للقائمة
+    </a>
+  </div>
+
+  <!-- محتوى البطاقة -->
+  <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-inner space-y-3 text-gray-800">
+
+    <div class="text-center mb-4">
+      <div class="w-20 h-20 mx-auto bg-blue-100 rounded-full flex items-center justify-center mb-3">
+        <span class="text-3xl">👤</span>
+      </div>
+      <h2 class="text-xl font-semibold text-blue-700">{{ patient.name }}</h2>
+    </div>
+
+    <div class="space-y-2 text-[15px]">
+      <p><strong>📅 العمر:</strong> {{ patient.age }} سنة</p>
+      <p><strong>📞 رقم الهاتف:</strong> {{ patient.phone|default:"غير محدد" }}</p>
+      <p><strong>🩹 التشخيص:</strong> {{ patient.diagnosis|default:"—" }}</p>
+      <p><strong>📝 الملاحظات:</strong> {{ patient.notes|default:"لا توجد ملاحظات" }}</p>
+    </div>
+
+    <hr class="my-4">
+
+    <p class="text-sm text-gray-500 text-center">
+      <strong>تاريخ التسجيل:</strong> {{ patient.created_at|date:"Y/m/d" }}
+    </p>
+  </div>
+
+  <!-- الأزرار -->
+  <div class="mt-6 flex justify-end gap-3">
+    <a href="{% url 'patients:list' %}"
+       class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium">
+       رجوع
+    </a>
+    <a href="{% url 'patients:delete' patient.id %}"
+       class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm font-medium">
+       حذف
+    </a>
+  </div>
+</div>
+
+<!-- تحسين الشكل العام -->
+<style>
+  @media (min-width: 768px) {
+    .max-w-xl {
+      max-width: 420px;
+    }
+  }
+</style>
+
+{% endblock %}
