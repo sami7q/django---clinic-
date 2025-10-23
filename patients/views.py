@@ -5,6 +5,7 @@ from .models import Patient
 from .forms import PatientForm
 
 
+
 # 🧾 قائمة المرضى
 def patients_list(request):
     patients = Patient.objects.all().order_by('-id')
@@ -47,3 +48,10 @@ def delete_patient(request, pk):
 def patient_view(request, pk):
     patient = get_object_or_404(Patient, pk=pk)
     return render(request, 'patients/view.html', {'patient': patient})
+
+
+
+def patient_detail(request, id):
+    patient = get_object_or_404(Patient, id=id)
+    return render(request, "patients/detail.html", {"patient": patient})
+

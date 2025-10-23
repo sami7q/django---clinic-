@@ -1,11 +1,12 @@
 from django.urls import path
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from . import views
 
 app_name = "invoices"
 
-@login_required
-def invoices_list(request):
-    return render(request, "invoices/list.html")
-
-urlpatterns = [ path("", invoices_list, name="list") ]
+urlpatterns = [
+    path("", views.invoice_list, name="list"),
+    path("create/", views.invoice_create, name="create"),
+    path("<int:id>/update/", views.invoice_update, name="update"),
+    path("<int:id>/delete/", views.invoice_delete, name="delete"),
+    path("summary/", views.financial_summary, name="summary"),
+]

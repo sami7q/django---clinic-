@@ -1,0 +1,33 @@
+<div>
+  <label class="block text-gray-700 font-medium mb-2">تاريخ الموعد:</label>
+
+  <div class="flex gap-3 mb-4">
+    <button type="button"
+            class="px-4 py-2 rounded-lg border text-sm font-medium transition"
+            :class="mode === 'month' ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 text-gray-700'"
+            @click="switchMode('month')">
+      هذا الشهر
+    </button>
+
+    <button type="button"
+            class="px-4 py-2 rounded-lg border text-sm font-medium transition"
+            :class="mode === 'next' ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 text-gray-700'"
+            @click="switchMode('next')">
+      الشهر القادم
+    </button>
+  </div>
+
+  <!-- الأيام -->
+  <div class="grid grid-cols-3 gap-2">
+    <template x-for="d in dates" :key="d">
+      <button type="button"
+              class="p-2 border rounded-lg text-sm hover:bg-blue-50 transition"
+              :class="selectedDate === d ? 'border-blue-600 text-blue-700 font-medium bg-blue-50' : 'border-gray-300 text-gray-700'"
+              @click="pickDate(d)">
+        <span x-text="new Date(d).toLocaleDateString('ar-EG', { weekday: 'short', day: 'numeric', month: 'short' })"></span>
+      </button>
+    </template>
+  </div>
+
+  <input type="hidden" name="date" :value="selectedDate">
+</div>

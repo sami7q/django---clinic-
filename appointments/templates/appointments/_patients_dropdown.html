@@ -1,0 +1,44 @@
+<div>
+  <label class="block text-gray-700 font-medium mb-1">اختر المريض:</label>
+
+  <select name="patient"
+          x-model="selectedPatient"
+          @change="handlePatientChange($event)"
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required>
+    <!-- خيار افتراضي + إضافة مريض -->
+    <option value="" disabled selected>اختر المريض...</option>
+    <option value="new">➕ إضافة مريض جديد</option>
+
+    {# في حال مررنا قوائم منفصلة من الـ view #}
+    {% if patients_active is not None and patients_archived is not None %}
+      <optgroup label="المرضى الحاليين">
+        {% for p in patients_active %}
+          <option value="{{ p.id }}">🟢 {{ p.name }}</option>
+        {% empty %}
+          <option value="" disabled>لا يوجد مرضى حاليين</option>
+        {% endfor %}
+      </optgroup>
+
+      <optgroup label="المرضى القدامى">
+        {% for p in patients_archived %}
+          <option value="{{ p.id }}">⚫ {{ p.name }}</option>
+        {% empty %}
+          <option value="" disabled>لا يوجد مرضى قدامى</option>
+        {% endfor %}
+      </optgroup>
+
+    {# fallback: في حال ما مررنا القوائم المنفصلة، نستخدم patients #}
+    {% elif patients %}
+      <optgroup label="جميع المرضى">
+        {% for p in patients %}
+          <option value="{{ p.id }}">{{ p.name }}</option>
+        {% empty %}
+          <option value="" disabled>لا يوجد مرضى</option>
+        {% endfor %}
+      </optgroup>
+    {% else %}
+      <option value="" disabled>لا يوجد مرضى</option>
+    {% endif %}
+  </select>
+</div>

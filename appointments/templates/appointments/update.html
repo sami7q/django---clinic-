@@ -2,7 +2,8 @@
 {% block content %}
 
 <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-10 border border-gray-100">
-
+  
+  <!-- العنوان -->
   <div class="flex justify-between items-center mb-8">
     <h1 class="text-2xl font-bold text-blue-700">✏️ تعديل الموعد</h1>
     <a href="{% url 'appointments:list' %}" 
@@ -11,9 +12,34 @@
     </a>
   </div>
 
+  <!-- النموذج -->
   <form method="POST" class="space-y-5">
     {% csrf_token %}
-    {{ form.as_p }}
+
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">اسم المريض:</label>
+      {{ form.patient }}
+    </div>
+
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">تاريخ الموعد:</label>
+      {{ form.date }}
+    </div>
+
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">الوقت:</label>
+      {{ form.time }}
+    </div>
+
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">سبب الزيارة:</label>
+      {{ form.reason }}
+    </div>
+
+    <div>
+      <label class="block text-gray-700 font-medium mb-1">الحالة:</label>
+      {{ form.status }}
+    </div>
 
     <div class="flex justify-end gap-3 pt-4">
       <a href="{% url 'appointments:list' %}"
@@ -22,10 +48,26 @@
       </a>
       <button type="submit"
               class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-        حفظ التغييرات
+        حفظ التعديلات
       </button>
     </div>
   </form>
 </div>
+
+<style>
+input, select, textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+}
+</style>
 
 {% endblock %}

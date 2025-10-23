@@ -1,11 +1,29 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.db.models import Sum
+from patients.models import Patient
+from appointments.models import Appointment
+from invoices.models import Invoice
+from django.contrib.auth.models import User
+from datetime import date, timedelta
 
-@login_required
 def home(request):
-    stats = {
-        "patients_today": 0,
-        "appointments_today": 0,
-        "invoices_today": 0,
+    total_patients = Patient.objects.count()
+    today_patients = Patient.objects.filter(created_at__date=date.today()).count()
+    total_appointments = Appointment.objects.count()
+    recent_appointments = Appointment.objects.filter(date__gte=date.today() - timedelta(days=1)).count()
+    total_invoices = Invoice.objects.aggregate(total=Sum('consultation_fee'))['total'] or 0
+    this_week_invoices = Invoice.objects.filter(date__gte=date.today() - timedelta(days=7)).aggregate(total=Sum('consultation_fee'))['total'] or 0
+    users_count = User.objects.count()
+    recent_patients = Patient.objects.order_by('-created_at')[:5]
+
+    context = {
+        "total_patients": total_patients,
+        "today_patients": today_patients,
+        "total_appointments": total_appointments,
+        "recent_appointments": recent_appointments,
+        "total_invoices": total_invoices,
+        "this_week_invoices": this_week_invoices,
+        "users_count": users_count,
+        "recent_patients": recent_patients,
     }
-    return render(request, "dashboard/home.html", {"stats": stats})
+    return render(request, "dashboard/home.html", context)

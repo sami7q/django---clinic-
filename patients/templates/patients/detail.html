@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="p-6">
+  <h1 class="text-2xl font-bold mb-4">🧾 بيانات المريض</h1>
+
+  <div class="bg-white p-4 rounded-xl shadow border border-gray-200 space-y-3">
+    <p><strong>الاسم:</strong> {{ patient.name }}</p>
+    <p><strong>العمر:</strong> {{ patient.age }}</p>
+    <p><strong>الهاتف:</strong> {{ patient.phone|default:"—" }}</p>
+    <p><strong>التشخيص:</strong> {{ patient.diagnosis|default:"—" }}</p>
+    <p><strong>الملاحظات:</strong> {{ patient.notes|default:"—" }}</p>
+    <p><strong>تاريخ التسجيل:</strong> {{ patient.created_at|date:"d MMMM yyyy" }}</p>
+  </div>
+
+  <div class="mt-4">
+    <a href="{% url 'patients:list' %}" class="text-blue-600 hover:underline">← الرجوع للقائمة</a>
+  </div>
+</div>
+{% endblock %}

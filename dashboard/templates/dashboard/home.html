@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="p-6 space-y-8">
+
+  <!-- 👋 الترحيب -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-800">👋 أهلاً {{ request.user.first_name|default:request.user.username }}</h1>
+    <p class="text-gray-500">إليك لمحة سريعة عن نشاط العيادة اليوم</p>
+  </div>
+
+  <!-- 📊 البطاقات الإحصائية -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+    <div class="bg-white shadow rounded-2xl p-5 border border-gray-200">
+      <p class="text-sm text-gray-600 mb-1">👨‍⚕️ المرضى</p>
+      <h2 class="text-3xl font-bold text-blue-700">{{ total_patients }}</h2>
+      <p class="text-xs text-gray-500 mt-1">+{{ today_patients }} اليوم</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-5 border border-gray-200">
+      <p class="text-sm text-gray-600 mb-1">📅 المواعيد</p>
+      <h2 class="text-3xl font-bold text-emerald-700">{{ total_appointments }}</h2>
+      <p class="text-xs text-gray-500 mt-1">+{{ recent_appointments }} خلال 24 ساعة</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-5 border border-gray-200">
+      <p class="text-sm text-gray-600 mb-1">💰 الفواتير</p>
+      <h2 class="text-3xl font-bold text-green-700">{{ total_invoices|floatformat:0 }} IQD</h2>
+      <p class="text-xs text-gray-500 mt-1">+{{ this_week_invoices|floatformat:0 }} هذا الأسبوع</p>
+    </div>
+
+    <div class="bg-white shadow rounded-2xl p-5 border border-gray-200">
+      <p class="text-sm text-gray-600 mb-1">👥 المستخدمون</p>
+      <h2 class="text-3xl font-bold text-indigo-700">{{ users_count }}</h2>
+      <p class="text-xs text-gray-500 mt-1">عدد المسجلين في النظام</p>
+    </div>
+
+  </div>
+
+  <!-- 🧾 آخر المرضى -->
+  <div class="bg-white rounded-2xl shadow border border-gray-200 mt-8">
+    <div class="flex justify-between items-center border-b px-6 py-3 bg-gray-50">
+      <h2 class="font-semibold text-gray-700">🧾 آخر المرضى المسجلين</h2>
+      <a href="{% url 'patients:list' %}" class="text-blue-600 text-sm hover:underline">عرض الكل</a>
+    </div>
+
+    <table class="min-w-full text-sm text-left">
+      <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+        <tr>
+          <th class="px-6 py-3">الاسم</th>
+          <th class="px-6 py-3">العمر</th>
+          <th class="px-6 py-3">تاريخ التسجيل</th>
+          <th class="px-6 py-3 text-right">الإجراء</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in recent_patients %}
+        <tr class="border-b hover:bg-gray-50 transition">
+          <td class="px-6 py-3">{{ p.name }}</td>
+          <td class="px-6 py-3">{{ p.age }}</td>
+          <td class="px-6 py-3">{{ p.created_at|date:"d F Y" }}</td>
+          <td class="px-6 py-3 text-right">
+            <a href="{% url 'patients:detail' p.id %}" class="text-blue-600 hover:underline">عرض</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center py-6 text-gray-500">لا يوجد مرضى بعد</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+{% endblock %}

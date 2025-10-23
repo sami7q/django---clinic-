@@ -1,75 +1,170 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8 mt-10 border border-gray-100">
-
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-2xl font-bold text-blue-700">➕ إضافة موعد جديد</h1>
+<div 
+  x-data="appointmentForm()" 
+  x-init="init()" 
+  class="max-w-2xl mx-auto mt-10 bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-8"
+>
+  <!-- 🩺 العنوان -->
+  <header class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-blue-700">📅 إضافة موعد جديد</h1>
     <a href="{% url 'appointments:list' %}" 
-       class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
+       class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
       ← العودة للقائمة
     </a>
-  </div>
+  </header>
 
-  <form method="POST" class="space-y-5">
+  <!-- 🧾 النموذج -->
+  <form method="POST" class="space-y-8">
     {% csrf_token %}
 
+    <!-- 🔹 اختيار المريض -->
+    {% include 'appointments/_patients_dropdown.html' %}
+
+    <!-- 🔹 اختيار التاريخ -->
+    {% include 'appointments/_date_picker.html' %}
+
+    <!-- 🔹 اختيار الوقت -->
     <div>
-      <label class="block text-gray-700 font-medium mb-1">المريض:</label>
-      {{ form.patient }}
+      <label class="block text-gray-700 font-medium mb-1">اختيار الوقت:</label>
+      <div class="grid grid-cols-6 gap-1">
+        <template x-for="t in timeSlots" :key="t.value">
+          <button type="button"
+                  class="p-1.5 border rounded text-xs hover:bg-blue-50 transition"
+                  :disabled="!t.available"
+                  :class="selectedTime === t.value
+                           ? 'border-blue-600 text-blue-700 font-medium bg-blue-50'
+                           : (t.available ? 'border-gray-300 text-gray-700' : 'border-gray-200 text-gray-400 line-through')"
+                  @click="selectedTime = t.value"
+                  x-text="t.label"></button>
+        </template>
+      </div>
+      <input type="hidden" name="time" :value="selectedTime">
     </div>
 
-    <div>
-      <label class="block text-gray-700 font-medium mb-1">تاريخ الموعد:</label>
-      {{ form.date }}
-    </div>
-
-    <div>
-      <label class="block text-gray-700 font-medium mb-1">الوقت:</label>
-      {{ form.time }}
-    </div>
-
+    <!-- 🔹 السبب + الحالة -->
     <div>
       <label class="block text-gray-700 font-medium mb-1">سبب الزيارة:</label>
       {{ form.reason }}
-    </div>
 
-    <div>
-      <label class="block text-gray-700 font-medium mb-1">الحالة:</label>
+      <label class="block text-gray-700 font-medium mt-4 mb-1">الحالة:</label>
       {{ form.status }}
     </div>
 
+    <!-- 🔹 الأزرار -->
     <div class="flex justify-end gap-3 pt-4">
-      <a href="{% url 'appointments:list' %}"
+      <a href="{% url 'appointments:list' %}" 
          class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
          إلغاء
       </a>
-      <button type="submit"
+      <button type="submit" 
               class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
-        حفظ الموعد
+        💾 حفظ الموعد
       </button>
     </div>
   </form>
 </div>
 
-<style>
-input, textarea, select {
-  width: 100%;
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
-  padding: 0.6rem 0.8rem;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
+<!-- ⚙️ سكربت Alpine.js -->
+<script>
+function appointmentForm() {
+  return {
+    mode: 'month',
+    dates: [],
+    selectedDate: '',
+    selectedTime: '',
+    selectedPatient: '',
+    timeSlots: [],
+    bookedByDate: JSON.parse('{{ booked_slots_json|escapejs }}'),
+    __initialized: false,
+
+    init() {
+      if (this.__initialized) return;
+      this.__initialized = true;
+
+      this.generateDates('month');
+      if (this.dates.length > 0) this.selectedDate = this.dates[0];
+      this.generateTimeSlots();
+
+      this.$watch('selectedDate', () => {
+        this.selectedTime = '';
+        this.generateTimeSlots();
+      });
+    },
+
+    handlePatientChange(e) {
+      if (e.target.value === 'new') {
+        window.open("{% url 'patients:create' %}", "_blank");
+        e.target.value = '';
+      }
+    },
+
+    switchMode(mode) {
+      if (this.mode === mode) return;
+      this.mode = mode;
+      this.generateDates(mode);
+      this.selectedTime = '';
+      this.selectedDate = this.dates.length ? this.dates[0] : '';
+      this.generateTimeSlots();
+    },
+
+    generateDates(mode) {
+      this.dates = [];
+      const now = new Date();
+      const year = now.getFullYear();
+
+      if (mode === 'month') {
+        const month = now.getMonth();
+        const today = now.getDate();
+        const lastDay = new Date(year, month + 1, 0).getDate();
+        for (let i = today; i <= lastDay; i++) {
+          const d = new Date(year, month, i);
+          this.dates.push(d.toISOString().split('T')[0]);
+        }
+      } else if (mode === 'next') {
+        const nextMonth = now.getMonth() + 1;
+        const lastDayNext = new Date(year, nextMonth + 1, 0).getDate();
+        for (let i = 1; i <= lastDayNext; i++) {
+          const d = new Date(year, nextMonth, i);
+          this.dates.push(d.toISOString().split('T')[0]);
+        }
+      }
+    },
+
+    generateTimeSlots() {
+      this.timeSlots = [];
+      if (!this.selectedDate) return;
+
+      const now = new Date();
+      const selected = new Date(this.selectedDate + 'T00:00:00');
+      const sameDay = selected.toDateString() === now.toDateString();
+      const bookedSet = new Set(this.bookedByDate[this.selectedDate] || []);
+
+      for (let hour = 9; hour <= 19; hour++) {
+        for (let min = 0; min < 60; min += 30) {
+          const hh = String(hour).padStart(2, '0');
+          const mm = min === 0 ? '00' : '30';
+          const value = `${hh}:${mm}`;
+          let available = true;
+
+          if (sameDay) {
+            const slotDate = new Date(this.selectedDate + `T${hh}:${mm}:00`);
+            if (slotDate <= now) available = false;
+          }
+          if (bookedSet.has(value)) available = false;
+
+          this.timeSlots.push({ label: value, value, available });
+        }
+      }
+    },
+
+    pickDate(isoDate) {
+      if (this.selectedDate === isoDate) return;
+      this.selectedDate = isoDate;
+    }
+  };
 }
-input:focus, textarea:focus, select:focus {
-  border-color: #2563eb;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-}
-textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-</style>
+</script>
 
 {% endblock %}
