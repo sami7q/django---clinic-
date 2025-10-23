@@ -44,13 +44,58 @@
     </div>
 
     <!-- 🔹 السبب + الحالة -->
-    <div>
-      <label class="block text-gray-700 font-medium mb-1">سبب الزيارة:</label>
-      {{ form.reason }}
+    <!-- 🔹 السبب + الحالة -->
+<div class="mt-6 space-y-5">
 
-      <label class="block text-gray-700 font-medium mt-4 mb-1">الحالة:</label>
+  <!-- سبب الزيارة -->
+  <div>
+    <label class="block text-gray-700 font-medium mb-2">سبب الزيارة:</label>
+    <textarea name="reason"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+              rows="2">{{ form.reason.value|default_if_none:'' }}</textarea>
+  </div>
+
+  <!-- الحالة -->
+  <div>
+    <label class="block text-gray-700 font-medium mb-2">الحالة:</label>
+    <div class="relative inline-block w-full">
       {{ form.status }}
     </div>
+  </div>
+
+</div>
+
+<style>
+  select[name="status"] {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0.45rem 2rem 0.45rem 0.75rem;
+    font-size: 0.875rem;
+    background-color: #fff;
+    color: #374151;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, #2563eb 50%),
+                      linear-gradient(135deg, #2563eb 50%, transparent 50%);
+    background-position: calc(100% - 16px) center, calc(100% - 11px) center;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+
+  select[name="status"]:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+  }
+
+  textarea[name="reason"] {
+    resize: none;
+  }
+</style>
+
 
     <!-- 🔹 الأزرار -->
     <div class="flex justify-end gap-3 pt-4">
@@ -59,7 +104,7 @@
          إلغاء
       </a>
       <button type="submit" 
-              class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+              class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-sm">
         💾 حفظ الموعد
       </button>
     </div>
@@ -166,5 +211,36 @@ function appointmentForm() {
   };
 }
 </script>
+
+<!-- 🎨 تحسين مظهر الحقول (بدون أي مكتبات) -->
+<style>
+  select, textarea, input[type="text"] {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    background-color: #fff;
+    color: #374151;
+    transition: all 0.2s ease;
+  }
+
+  select:focus,
+  textarea:focus,
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
+  }
+
+  select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, #2563eb 50%), 
+                      linear-gradient(135deg, #2563eb 50%, transparent 50%);
+    background-position: calc(100% - 15px) calc(1em + 2px), calc(100% - 10px) calc(1em + 2px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+</style>
 
 {% endblock %}

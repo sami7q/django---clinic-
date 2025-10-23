@@ -64,28 +64,35 @@
 
           <!-- الحالة والأزرار -->
           <div class="flex items-center justify-between mt-auto pt-2">
-            <span class="inline-block text-[12px] font-medium px-2 py-1 rounded-md border"
-                  :class="statusClass(appt.status)"
-                  x-text="appt.status"></span>
+  <!-- شارة الحالة -->
+  <span class="inline-flex items-center gap-1.5 text-[12px] font-semibold px-2.5 py-1 rounded-full border"
+        :class="statusClass(appt.status)">
+    <span class="w-2 h-2 rounded-full" :class="dotClass(appt.status)"></span>
+    <span x-text="appt.status"></span>
+  </span>
 
-            <div class="flex gap-2">
-              <a :href="appt.edit_url"
-                 class="flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-lg 
-                        bg-gradient-to-r from-blue-100 to-blue-50 text-blue-700 border border-blue-200 
-                        hover:from-blue-200 hover:to-blue-100 hover:scale-[1.05] hover:shadow-sm 
-                        active:scale-[0.97] transition-all duration-200 ease-in-out">
-                 ✏️ تعديل
-              </a>
+  <!-- أزرار التحكم -->
+  <div class="flex gap-2">
+    <a :href="appt.edit_url"
+       class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg 
+              bg-blue-500/10 text-blue-700 border border-blue-300 
+              hover:bg-blue-500 hover:text-white hover:shadow-md hover:scale-[1.03]
+              active:scale-[0.98] transition-all duration-200 ease-in-out">
+       <i class="ph ph-pencil-simple text-sm"></i>
+       تعديل
+    </a>
 
-              <a :href="appt.delete_url"
-                 class="flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-lg 
-                        bg-gradient-to-r from-red-100 to-red-50 text-red-700 border border-red-200 
-                        hover:from-red-200 hover:to-red-100 hover:scale-[1.05] hover:shadow-sm 
-                        active:scale-[0.97] transition-all duration-200 ease-in-out">
-                 🗑️ حذف
-              </a>
-            </div>
-          </div>
+    <a :href="appt.delete_url"
+       class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg 
+              bg-red-500/10 text-red-700 border border-red-300 
+              hover:bg-red-500 hover:text-white hover:shadow-md hover:scale-[1.03]
+              active:scale-[0.98] transition-all duration-200 ease-in-out">
+       <i class="ph ph-trash text-sm"></i>
+       حذف
+    </a>
+  </div>
+</div>
+
 
         </div>
       </template>

@@ -1,0 +1,65 @@
+<!-- 🔸 Navbar (إصلاح العرض في RTL) -->
+<header
+  class="fixed top-0 left-0 right-0 md:right-64 h-16 z-50
+         bg-gradient-to-l from-blue-600 to-blue-500 text-white shadow-md">
+  <div class="h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+
+    <!-- التحية / العنوان -->
+    <div class="flex items-center gap-2 font-semibold truncate">
+      <span class="whitespace-nowrap">👋 مرحبًا، {{ user.first_name|default:user.username }}</span>
+      <!-- لو حاب تضيف وقت لاحقًا: <span class="text-white/80 text-sm">|  {{ now|date:"H:i" }}</span> -->
+    </div>
+
+    <!-- أدوات اليسار -->
+    <div class="flex items-center gap-4">
+
+      <!-- إشعارات -->
+      <div class="relative">
+        <button id="notifBtn" class="hover:bg-white/20 p-2 rounded-full transition relative">
+          <i data-lucide="bell" class="w-5 h-5 text-white"></i>
+          <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full px-1 hidden">3</span>
+        </button>
+
+        <!-- قائمة الإشعارات -->
+        <div id="notifMenu"
+             class="hidden absolute left-0 mt-2 w-64 bg-white text-gray-700 rounded-xl shadow-lg
+                    overflow-hidden border border-gray-100">
+          <div class="px-4 py-2 bg-gray-50 font-semibold text-sm border-b">الإشعارات</div>
+          <div class="p-4 text-sm text-gray-500">لا توجد إشعارات حالياً 🔔</div>
+        </div>
+      </div>
+
+      <!-- تسجيل الخروج -->
+      <!-- تسجيل الخروج -->
+<form action="{% url 'logout' %}" method="post">
+  {% csrf_token %}
+  <button
+    class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition flex items-center gap-1 shadow-sm">
+    <i data-lucide="log-out" class="w-4 h-4"></i>
+    تسجيل الخروج
+  </button>
+</form>
+
+    </div>
+  </div>
+</header>
+
+<script>
+  lucide.createIcons();
+
+  // إشعارات
+  const notifBtn = document.getElementById("notifBtn");
+  const notifMenu = document.getElementById("notifMenu");
+  const notifBadge = document.getElementById("notifBadge");
+
+  notifBtn?.addEventListener("click", () => {
+    notifMenu?.classList.toggle("hidden");
+    notifBadge?.classList.add("hidden");
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!notifBtn?.contains(e.target) && !notifMenu?.contains(e.target)) {
+      notifMenu?.classList.add("hidden");
+    }
+  });
+</script>

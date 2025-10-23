@@ -1,47 +1,65 @@
 {% extends 'base.html' %}
 {% block title %}تسجيل الدخول | IQ Clinic{% endblock %}
-
 {% block content %}
-<div class="min-h-[calc(100vh-6rem)] flex items-center justify-center">
-  <div class="w-full max-w-md bg-white border border-gray-200 shadow-sm rounded-2xl p-8">
-    <div class="flex items-center gap-2 mb-6">
-      <svg width="28" height="28" viewBox="0 0 24 24" class="text-blue-600">
-        <rect width="24" height="24" rx="6" fill="#3b82f6"></rect>
-        <path d="M7 13h10M12 7v10" stroke="white" stroke-width="2" stroke-linecap="round"></path>
-      </svg>
-      <h1 class="text-xl font-extrabold text-blue-700">IQ Clinic</h1>
+
+<div class="min-h-[80vh] flex items-center justify-center bg-gray-50">
+  <div class="bg-white shadow-xl border border-gray-100 rounded-2xl w-full max-w-md p-8">
+
+    <!-- 🩺 الشعار -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center mb-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-extrabold text-lg shadow-md">
+          IQ
+        </div>
+        <h1 class="ml-2 text-2xl font-bold text-gray-800">Clinic</h1>
+      </div>
+      <p class="text-gray-500 text-sm">مرحبًا بك من جديد 👋</p>
     </div>
 
-    <h2 class="text-lg font-bold mb-1">مرحبًا بعودتك</h2>
-    <p class="text-sm text-gray-500 mb-6">سجّل دخولك للمتابعة</p>
-
-    <form method="post" class="space-y-4 text-right">
+    <!-- 🔹 النموذج -->
+    <form method="post" class="space-y-6">
       {% csrf_token %}
+
+      <!-- اسم المستخدم -->
       <div>
-        <label for="id_username" class="block mb-1 text-sm font-semibold">اسم المستخدم</label>
-        <input id="id_username" name="username" type="text"
-               class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
-               required />
+        <label class="block text-gray-700 font-medium mb-1">اسم المستخدم</label>
+        <input type="text" name="username"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+               placeholder="أدخل اسم المستخدم" required>
       </div>
+
+      <!-- كلمة المرور -->
       <div>
-        <label for="id_password" class="block mb-1 text-sm font-semibold">كلمة المرور</label>
-        <input id="id_password" name="password" type="password"
-               class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
-               required />
+        <label class="block text-gray-700 font-medium mb-1">كلمة المرور</label>
+        <input type="password" name="password"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm
+                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+               placeholder="••••••••" required>
       </div>
 
       {% if form.errors %}
-      <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg py-2 px-3 text-sm text-center">
-        ⚠️ اسم المستخدم أو كلمة المرور غير صحيحة.
-      </div>
+      <p class="text-red-600 text-sm text-center bg-red-50 border border-red-200 py-2 rounded-lg">
+        ⚠️ اسم المستخدم أو كلمة المرور غير صحيحة
+      </p>
       {% endif %}
 
-      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold">
-        تسجيل الدخول
-      </button>
+      <!-- زر الدخول -->
+      <div class="pt-2">
+        <button type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg
+                       transition-all shadow-sm hover:shadow-md">
+          تسجيل الدخول
+        </button>
+      </div>
     </form>
 
-    <p class="text-xs text-gray-500 mt-6 text-center">© IQ Clinic 2025</p>
+    <!-- روابط مساعدة -->
+    <div class="text-center mt-6 text-sm text-gray-500">
+      <p>نسيت كلمة المرور؟ <a href="#" class="text-blue-600 hover:underline">استعادة</a></p>
+    </div>
+
   </div>
 </div>
+
 {% endblock %}

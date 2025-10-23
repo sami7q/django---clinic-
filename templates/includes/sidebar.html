@@ -1,0 +1,33 @@
+<!-- 🔹 Sidebar -->
+<aside class="fixed top-0 right-0 w-64 h-full shadow-lg z-40 flex flex-col bg-gradient-to-br from-blue-50 to-white border-l border-blue-100">
+  <!-- الشعار -->
+  <div class="flex items-center justify-center gap-2 py-6 border-b border-blue-100">
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold px-3 py-1.5 rounded-lg shadow-sm">
+      IQ
+    </div>
+    <div class="text-xl font-extrabold text-gray-800">Clinic</div>
+  </div>
+
+  <!-- القوائم -->
+  <nav class="flex-1 px-4 py-6 space-y-1 text-[15px]">
+    <a href="{% url 'dashboard:home' %}" class="block rounded-lg px-3 py-2 hover:bg-blue-50 {% if '/dashboard' in request.path %}bg-blue-100 text-blue-700 font-semibold{% endif %}">
+      <i data-lucide="layout-dashboard" class="inline w-5 h-5 mr-2"></i> لوحة التحكم
+    </a>
+    <a href="{% url 'patients:list' %}" class="block rounded-lg px-3 py-2 hover:bg-blue-50 {% if '/patients' in request.path %}bg-blue-100 text-blue-700 font-semibold{% endif %}">
+      <i data-lucide="users" class="inline w-5 h-5 mr-2"></i> المرضى
+    </a>
+    <a href="{% url 'appointments:list' %}" class="block rounded-lg px-3 py-2 hover:bg-blue-50 {% if '/appointments' in request.path %}bg-blue-100 text-blue-700 font-semibold{% endif %}">
+      <i data-lucide="calendar" class="inline w-5 h-5 mr-2"></i> المواعيد
+    </a>
+    <a href="{% url 'invoices:list' %}" class="block rounded-lg px-3 py-2 hover:bg-blue-50 {% if '/invoices' in request.path %}bg-blue-100 text-blue-700 font-semibold{% endif %}">
+      <i data-lucide="file-text" class="inline w-5 h-5 mr-2"></i> الفواتير
+    </a>
+    <a href="{% url 'users:list' %}" class="block rounded-lg px-3 py-2 hover:bg-blue-50 {% if '/users' in request.path %}bg-blue-100 text-blue-700 font-semibold{% endif %}">
+      <i data-lucide="shield" class="inline w-5 h-5 mr-2"></i> المستخدمون
+    </a>
+  </nav>
+
+  <div class="text-center border-t border-gray-200 py-4 text-xs text-gray-500">
+    © IQ Clinic 2025
+  </div>
+</aside>

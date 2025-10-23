@@ -1,41 +1,50 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="p-6 space-y-8">
+<div class="p-6 space-y-10">
 
-  <!-- 👋 الترحيب -->
-  <div class="flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-gray-800">👋 أهلاً {{ request.user.first_name|default:request.user.username }}</h1>
-    <p class="text-gray-500">إليك لمحة سريعة عن نشاط العيادة اليوم</p>
+  <!-- 🌅 البطاقة الترحيبية -->
+  <div id="greetingCard"
+       class="relative overflow-hidden rounded-3xl border border-gray-200 shadow bg-gradient-to-r from-blue-50 to-blue-100 p-6 flex items-center justify-between transition-all duration-500">
+
+    <div class="space-y-1">
+      <h1 id="greetingText" class="text-2xl font-bold text-gray-800">
+        مرحباً {{ request.user.first_name|default:request.user.username }} 👋
+      </h1>
+      <p id="dateText" class="text-gray-600"></p>
+      <p class="text-gray-500 text-sm italic mt-1" id="quoteText">
+        نتمنى لك يوماً مثمرًا في إدارة العيادة 👨‍⚕️
+      </p>
+    </div>
+
+    <div id="iconArea" class="text-6xl text-yellow-400 transition-transform duration-500">☀️</div>
   </div>
 
-  <!-- 📊 البطاقات الإحصائية -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-
-    <div class="bg-white shadow rounded-2xl p-5 border border-gray-200">
-      <p class="text-sm text-gray-600 mb-1">👨‍⚕️ المرضى</p>
+  <!-- 📊 البطاقات -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+    <div class="bg-white border border-gray-200 shadow rounded-2xl p-5 hover:shadow-lg transition">
+      <p class="text-sm text-gray-500 mb-1">👨‍⚕️ المرضى</p>
       <h2 class="text-3xl font-bold text-blue-700">{{ total_patients }}</h2>
       <p class="text-xs text-gray-500 mt-1">+{{ today_patients }} اليوم</p>
     </div>
 
-    <div class="bg-white shadow rounded-2xl p-5 border border-gray-200">
-      <p class="text-sm text-gray-600 mb-1">📅 المواعيد</p>
+    <div class="bg-white border border-gray-200 shadow rounded-2xl p-5 hover:shadow-lg transition">
+      <p class="text-sm text-gray-500 mb-1">📅 المواعيد</p>
       <h2 class="text-3xl font-bold text-emerald-700">{{ total_appointments }}</h2>
-      <p class="text-xs text-gray-500 mt-1">+{{ recent_appointments }} خلال 24 ساعة</p>
+      <p class="text-xs text-gray-500 mt-1">+{{ recent_appointments }} آخر 24 ساعة</p>
     </div>
 
-    <div class="bg-white shadow rounded-2xl p-5 border border-gray-200">
-      <p class="text-sm text-gray-600 mb-1">💰 الفواتير</p>
+    <div class="bg-white border border-gray-200 shadow rounded-2xl p-5 hover:shadow-lg transition">
+      <p class="text-sm text-gray-500 mb-1">💰 الفواتير</p>
       <h2 class="text-3xl font-bold text-green-700">{{ total_invoices|floatformat:0 }} IQD</h2>
       <p class="text-xs text-gray-500 mt-1">+{{ this_week_invoices|floatformat:0 }} هذا الأسبوع</p>
     </div>
 
-    <div class="bg-white shadow rounded-2xl p-5 border border-gray-200">
-      <p class="text-sm text-gray-600 mb-1">👥 المستخدمون</p>
+    <div class="bg-white border border-gray-200 shadow rounded-2xl p-5 hover:shadow-lg transition">
+      <p class="text-sm text-gray-500 mb-1">👥 المستخدمون</p>
       <h2 class="text-3xl font-bold text-indigo-700">{{ users_count }}</h2>
-      <p class="text-xs text-gray-500 mt-1">عدد المسجلين في النظام</p>
+      <p class="text-xs text-gray-500 mt-1">المسجلون في النظام</p>
     </div>
-
   </div>
 
   <!-- 🧾 آخر المرضى -->
@@ -65,12 +74,57 @@
           </td>
         </tr>
         {% empty %}
-        <tr><td colspan="4" class="text-center py-6 text-gray-500">لا يوجد مرضى بعد</td></tr>
+        <tr>
+          <td colspan="4" class="text-center py-6 text-gray-500">لا يوجد مرضى بعد</td>
+        </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
-
 </div>
+
+<!-- 🌞 سكريبت الترحيب -->
+<script>
+  function updateGreeting() {
+    const now = new Date();
+    const hour = now.getHours();
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+
+    const isMorning = hour >= 5 && hour < 12;
+    const isEvening = hour >= 18 || hour < 5;
+
+    const greetingText = document.getElementById("greetingText");
+    const dateText = document.getElementById("dateText");
+    const iconArea = document.getElementById("iconArea");
+    const quoteText = document.getElementById("quoteText");
+    const card = document.getElementById("greetingCard");
+
+    const days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+    const months = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+
+    const todayStr = `${days[now.getDay()]}، ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} — ${hour}:${minutes}`;
+    dateText.textContent = todayStr;
+
+    if (isMorning) {
+      greetingText.textContent = `🌅 صباح الخير، {{ request.user.first_name|default:request.user.username }}!`;
+      iconArea.textContent = "☀️";
+      card.className = "relative overflow-hidden rounded-3xl border border-yellow-200 shadow bg-gradient-to-r from-yellow-50 to-blue-50 p-6 flex items-center justify-between transition-all";
+      quoteText.textContent = "نتمنى لك يومًا مثمرًا ومليئًا بالنشاط 👨‍⚕️";
+    } else if (isEvening) {
+      greetingText.textContent = `🌙 مساء الخير، {{ request.user.first_name|default:request.user.username }}!`;
+      iconArea.textContent = "🌙";
+      card.className = "relative overflow-hidden rounded-3xl border border-gray-300 shadow bg-gradient-to-r from-blue-100 to-gray-200 p-6 flex items-center justify-between transition-all";
+      quoteText.textContent = "نتمنى لك أمسية هادئة بعد يوم مليء بالعمل 🌙";
+    } else {
+      greetingText.textContent = `👋 أهلاً، {{ request.user.first_name|default:request.user.username }}!`;
+      iconArea.textContent = "☁️";
+      card.className = "relative overflow-hidden rounded-3xl border border-gray-200 shadow bg-gradient-to-r from-blue-50 to-gray-50 p-6 flex items-center justify-between transition-all";
+      quoteText.textContent = "استمر في إنجازاتك 💪";
+    }
+  }
+
+  updateGreeting();
+  setInterval(updateGreeting, 60000);
+</script>
 
 {% endblock %}
