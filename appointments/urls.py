@@ -7,6 +7,6 @@ urlpatterns = [
     path("", views.appointments_list, name="list"),
     path("all/", views.appointments_all, name="all"),
     path("create/", views.appointment_create, name="create"),
-    path("<int:pk>/edit/", views.appointment_update, name="edit"),
+    path("<int:pk>/edit/", views.appointment_edit, name="edit"),   # ✅ تم التعديل هنا
     path("<int:pk>/delete/", views.appointment_delete, name="delete"),
 ]

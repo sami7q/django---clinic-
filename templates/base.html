@@ -1,16 +1,16 @@
-{% load static %}
 <!doctype html>
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}IQ Clinic | نظام إدارة العيادات{% endblock %}</title>
+    <title>IQ Clinic | نظام إدارة العيادات</title>
 
-    <!-- الخط الافتراضي الجديد -->
+    <!-- الخطوط و الأنماط -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    <link rel="stylesheet" href="/static/css/app.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
       body {
@@ -23,25 +23,78 @@
   </head>
 
   <body class="min-h-screen">
-    {% if user.is_authenticated %}
-      {% include "includes/navbar.html" %}
-      {% include "includes/sidebar.html" %}
-    {% endif %}
+    
+    <!-- 🔹 الشريط العلوي -->
+    <header class="fixed top-0 left-0 right-0 md:right-64 h-16 z-50 bg-gradient-to-l from-blue-600 to-blue-500 text-white shadow-md">
+      <div class="h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <div class="flex items-center gap-2 font-semibold truncate">
+          <span>👋 مرحبًا، sami</span>
+        </div>
 
-    <main class="{% if user.is_authenticated %}md:mr-64{% endif %} pt-20 px-4 sm:px-6 lg:px-8 pb-10 transition-all">
-      {% block content %}{% endblock %}
+        <div class="flex items-center gap-4">
+          <!-- الإشعارات -->
+          <div class="relative">
+            <button id="notifBtn" class="hover:bg-white/20 p-2 rounded-full transition relative">
+              <i data-lucide="bell" class="w-5 h-5 text-white"></i>
+              <span id="notifBadge" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full px-1 hidden">3</span>
+            </button>
+            <div id="notifMenu"
+                 class="hidden absolute left-0 mt-2 w-64 bg-white text-gray-700 rounded-xl shadow-lg overflow-hidden border border-gray-100">
+              <div class="px-4 py-2 bg-gray-50 font-semibold text-sm border-b">الإشعارات</div>
+              <div class="p-4 text-sm text-gray-500">لا توجد إشعارات حالياً 🔔</div>
+            </div>
+          </div>
+
+          <!-- تسجيل الخروج -->
+          <form action="/auth/logout/" method="post">
+            {% csrf_token %}
+            <button class="bg-red-500 hover:bg-red-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition flex items-center gap-1 shadow-sm">
+              <i data-lucide="log-out" class="w-4 h-4"></i>
+              تسجيل الخروج
+            </button>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <!-- 🔹 القائمة الجانبية -->
+    <aside class="fixed top-0 right-0 w-64 h-full shadow-lg z-40 flex flex-col bg-gradient-to-br from-blue-50 to-white border-l border-blue-100">
+      <div class="flex items-center justify-center gap-2 py-6 border-b border-blue-100">
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-extrabold px-3 py-1.5 rounded-lg shadow-sm">IQ</div>
+        <div class="text-xl font-extrabold text-gray-800">Clinic</div>
+      </div>
+
+      <nav class="flex-1 px-4 py-6 space-y-1 text-[15px]">
+        <a href="/dashboard/" class="block rounded-lg px-3 py-2 hover:bg-blue-50"><i data-lucide="layout-dashboard" class="inline w-5 h-5 mr-2"></i> لوحة التحكم</a>
+        <a href="/patients/" class="block rounded-lg px-3 py-2 hover:bg-blue-50"><i data-lucide="users" class="inline w-5 h-5 mr-2"></i> المرضى</a>
+        <a href="/appointments/" class="block rounded-lg px-3 py-2 hover:bg-blue-50"><i data-lucide="calendar" class="inline w-5 h-5 mr-2"></i> المواعيد</a>
+        <a href="/invoices/" class="block rounded-lg px-3 py-2 hover:bg-blue-50"><i data-lucide="file-text" class="inline w-5 h-5 mr-2"></i> الفواتير</a>
+        <a href="/users/" class="block rounded-lg px-3 py-2 hover:bg-blue-50"><i data-lucide="shield" class="inline w-5 h-5 mr-2"></i> المستخدمون</a>
+      </nav>
+
+      <div class="text-center border-t border-gray-200 py-4 text-xs text-gray-500">© IQ Clinic 2025</div>
+    </aside>
+
+    <!-- 🔸 محتوى الصفحة -->
+    <main class="md:mr-64 pt-20 px-4 sm:px-6 lg:px-8 pb-10 transition-all">
+      {% block content %}
+      {% endblock %}
     </main>
 
     <script>
-      const btn = document.getElementById('menuBtn');
-      const sidebar = document.getElementById('sidebar');
-      if (btn && sidebar) {
-        btn.addEventListener('click', () => {
-          const open = !sidebar.classList.contains('translate-x-0');
-          sidebar.classList.toggle('translate-x-0', open);
-          sidebar.classList.toggle('translate-x-full', !open);
-        });
-      }
+      lucide.createIcons();
+      const notifBtn = document.getElementById("notifBtn");
+      const notifMenu = document.getElementById("notifMenu");
+      const notifBadge = document.getElementById("notifBadge");
+      notifBtn?.addEventListener("click", () => {
+        notifMenu?.classList.toggle("hidden");
+        notifBadge?.classList.add("hidden");
+      });
+      document.addEventListener("click", (e) => {
+        if (!notifBtn?.contains(e.target) && !notifMenu?.contains(e.target)) {
+          notifMenu?.classList.add("hidden");
+        }
+      });
     </script>
   </body>
 </html>

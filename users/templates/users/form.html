@@ -1,76 +1,93 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="max-w-sm mx-auto bg-white rounded-lg shadow border border-gray-200 mt-10 p-5 space-y-4 text-[13px] leading-relaxed">
+<div class="max-w-2xl mx-auto mt-10 bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-8">
 
   <!-- 🧭 العنوان -->
-  <header class="text-center space-y-1">
+  <header class="flex justify-between items-center border-b pb-3">
     {% if edit_mode %}
-      <h1 class="text-base font-semibold text-blue-700 flex justify-center items-center gap-1">
+      <h1 class="text-2xl font-bold text-blue-700 flex items-center gap-2">
         ✏️ تعديل المستخدم
       </h1>
-      <p class="text-gray-500 text-[12px]">يمكنك تعديل البيانات أو الصلاحيات.</p>
+      <p class="text-gray-500 text-sm">يمكنك تعديل بيانات المستخدم أو صلاحياته.</p>
     {% else %}
-      <h1 class="text-base font-semibold text-blue-700 flex justify-center items-center gap-1">
+      <h1 class="text-2xl font-bold text-blue-700 flex items-center gap-2">
         ➕ إضافة مستخدم جديد
       </h1>
-      <p class="text-gray-500 text-[12px]">املأ الحقول التالية لإنشاء حساب.</p>
+      <p class="text-gray-500 text-sm">املأ الحقول أدناه لإنشاء حساب جديد.</p>
     {% endif %}
   </header>
 
-  <form method="POST" class="space-y-3">
+  <!-- 🧾 النموذج -->
+  <form method="POST" class="space-y-8 text-sm">
     {% csrf_token %}
     {{ form.non_field_errors }}
 
-    <!-- 🧾 البيانات الأساسية -->
-    <section class="space-y-2">
-      <h2 class="text-[13px] font-semibold text-gray-800 border-b border-gray-100 pb-1">🧾 البيانات الأساسية</h2>
-      <div class="grid grid-cols-1 gap-2">
+    <!-- 👤 البيانات الأساسية -->
+    <section class="space-y-3">
+      <h2 class="text-base font-semibold text-gray-800 border-b border-gray-100 pb-1 flex items-center gap-2">
+        🧾 البيانات الأساسية
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-[12px] text-gray-700 mb-0.5">👤 اسم المستخدم</label>
+          <label class="block text-gray-700 font-medium mb-1">👤 اسم المستخدم</label>
           {{ form.username }}
+        </div>
+        <div>
+          <label class="block text-gray-700 font-medium mb-1">📧 البريد الإلكتروني</label>
+          {{ form.email }}
         </div>
       </div>
     </section>
 
     <!-- 🔐 الصلاحيات -->
-    <section class="space-y-2">
-      <h2 class="text-[13px] font-semibold text-gray-800 border-b border-gray-100 pb-1">🔐 الصلاحيات</h2>
-      <div class="grid grid-cols-2 gap-2">
-        <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-md p-2 hover:bg-gray-100 transition">
-          <span class="text-[12px] text-gray-700">لوحة الإدارة</span>
+    <section class="space-y-3">
+      <h2 class="text-base font-semibold text-gray-800 border-b border-gray-100 pb-1 flex items-center gap-2">
+        🔐 الصلاحيات
+      </h2>
+
+      <div class="grid grid-cols-2 gap-3">
+        <label class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition cursor-pointer">
+          <span class="text-gray-700 font-medium">🛠️ لوحة الإدارة</span>
           {{ form.is_staff }}
-        </div>
-        <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-md p-2 hover:bg-gray-100 transition">
-          <span class="text-[12px] text-gray-700">نشط؟</span>
+        </label>
+        <label class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition cursor-pointer">
+          <span class="text-gray-700 font-medium">✅ نشط</span>
           {{ form.is_active }}
-        </div>
+        </label>
       </div>
     </section>
 
     <!-- 🧩 الدور -->
-    <section class="space-y-1">
-      <h2 class="text-[13px] font-semibold text-gray-800 border-b border-gray-100 pb-1">🧩 الدور</h2>
+    <section class="space-y-3">
+      <h2 class="text-base font-semibold text-gray-800 border-b border-gray-100 pb-1 flex items-center gap-2">
+        🧩 الدور الوظيفي
+      </h2>
       {{ form.role }}
-      <ul class="text-[11px] text-gray-500 mt-1 grid grid-cols-2 gap-1">
-        <li>🧑‍💼 مدير — وصول كامل</li>
-        <li>🩺 طبيب — المواعيد والمرضى</li>
-        <li>💬 استقبال — المرضى والمواعيد</li>
-        <li>🧾 محاسب — الفواتير فقط</li>
-      </ul>
+
+      <div class="grid grid-cols-2 gap-2 mt-2 text-xs text-gray-500">
+        <div>🧑‍💼 <b>مدير:</b> وصول كامل للنظام</div>
+        <div>🩺 <b>طبيب:</b> إدارة المرضى والمواعيد</div>
+        <div>💬 <b>استقبال:</b> إدارة المواعيد فقط</div>
+        <div>🧾 <b>محاسب:</b> إدارة الفواتير فقط</div>
+      </div>
     </section>
 
     <!-- 🔑 كلمة المرور -->
     {% if not edit_mode %}
-    <section class="space-y-2">
-      <h2 class="text-[13px] font-semibold text-gray-800 border-b border-gray-100 pb-1">🔑 كلمة المرور</h2>
-      <div class="grid grid-cols-1 gap-2">
+    <section class="space-y-3">
+      <h2 class="text-base font-semibold text-gray-800 border-b border-gray-100 pb-1 flex items-center gap-2">
+        🔑 كلمة المرور
+      </h2>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-[12px] text-gray-700 mb-0.5">كلمة المرور</label>
+          <label class="block text-gray-700 font-medium mb-1">كلمة المرور</label>
           {{ form.password1 }}
         </div>
         <div>
-          <label class="block text-[12px] text-gray-700 mb-0.5">تأكيد كلمة المرور</label>
+          <label class="block text-gray-700 font-medium mb-1">تأكيد كلمة المرور</label>
           {{ form.password2 }}
         </div>
       </div>
@@ -78,17 +95,33 @@
     {% endif %}
 
     <!-- 🧭 الأزرار -->
-    <div class="flex justify-end gap-2 pt-3 border-t border-gray-100 mt-3">
+    <footer class="flex justify-end gap-3 border-t pt-4">
       <a href="{% url 'users:list' %}" 
-         class="px-3 py-1 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition text-[12px]">
-        ← رجوع
+         class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
+        ← إلغاء
       </a>
       <button type="submit" 
-              class="px-4 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-sm transition text-[12px]">
-        💾 {% if edit_mode %}حفظ{% else %}إضافة{% endif %}
+              class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold shadow">
+        💾 {% if edit_mode %}حفظ التعديلات{% else %}إضافة المستخدم{% endif %}
       </button>
-    </div>
+    </footer>
   </form>
 </div>
+
+<style>
+  input, select {
+    width: 100%;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+  }
+  input:focus, select:focus {
+    border-color: #2563eb;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+  }
+</style>
 
 {% endblock %}
