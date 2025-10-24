@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div 
+  x-data="invoiceForm()" 
+  x-init="init()"
+  class="max-w-2xl mx-auto mt-8 bg-white rounded-xl shadow-lg border border-gray-200 p-6 space-y-6"
+>
+  <!-- 🧾 العنوان -->
+  <header class="flex justify-between items-center mb-3">
+    <h1 class="text-xl font-bold text-blue-700">🧾 إنشاء فاتورة</h1>
+    <a href="{% url 'invoices:list' %}" 
+       class="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition text-sm">
+      ← رجوع
+    </a>
+  </header>
+
+  {% if error %}
+    <div class="p-2 bg-red-100 text-red-700 rounded-md text-sm">{{ error }}</div>
+  {% endif %}
+
+  <form method="POST" @submit.prevent="submitForm" class="space-y-5">
+    {% csrf_token %}
+
+    <!-- 👤 المريض -->
+    <div class="space-y-1">
+      <label class="block text-sm font-semibold text-gray-700">اسم المريض</label>
+      <input type="text" x-model="patientSearch" @input.debounce.300ms="searchPatients"
+             placeholder="ابحث عن المريض..." 
+             class="w-full rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500 p-2 text-sm">
+      <ul x-show="patients.length > 0" 
+          class="border border-gray-200 rounded-md mt-1 bg-white shadow-sm divide-y max-h-40 overflow-y-auto">
+        <template x-for="p in patients" :key="p.id">
+          <li @click="selectPatient(p)" 
+              class="px-3 py-2 hover:bg-blue-50 cursor-pointer text-sm flex justify-between">
+            <span x-text="p.name" class="font-medium text-gray-800"></span>
+            <span class="text-gray-500" x-text="p.phone || '—'"></span>
+          </li>
+        </template>
+      </ul>
+      <input type="hidden" name="patient" :value="selectedPatient?.id">
+      <template x-if="selectedPatient">
+        <p class="text-xs text-green-600 mt-1">✅ تم اختيار: <b x-text="selectedPatient.name"></b></p>
+      </template>
+    </div>
+
+    <!-- 💊 العنصر الافتراضي -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-2">
+      <div class="grid grid-cols-3 gap-2 text-sm">
+        <div>
+          <label class="text-gray-700 text-xs">الوصف</label>
+          <input type="text" name="item_desc_1" value="مراجعة عيادة" readonly
+                 class="w-full rounded-md border border-gray-300 bg-gray-100 text-gray-700 p-1.5 text-sm">
+        </div>
+        <div>
+          <label class="text-gray-700 text-xs">الكمية</label>
+          <input type="number" name="item_qty_1" value="1" min="1"
+                 class="w-full rounded-md border border-gray-300 p-1.5 text-sm text-center">
+        </div>
+        <div>
+          <label class="text-gray-700 text-xs">السعر (د.ع)</label>
+          <input type="number" step="1000" name="item_price_1" value="25000"
+                 class="w-full rounded-md border border-gray-300 p-1.5 text-sm text-center">
+        </div>
+      </div>
+    </div>
+
+    <!-- 💰 المبلغ والخصم -->
+    <div class="grid grid-cols-3 gap-3 text-sm">
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">الخصم</label>
+        <input type="number" step="1000" name="discount" x-model.number="discount"
+               class="w-full rounded-md border border-gray-300 p-1.5 text-sm">
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-gray-700 mb-1">طريقة الدفع</label>
+        <select name="payment_method"
+                class="w-full rounded-md border border-gray-300 p-1.5 text-sm">
+          <option value="cash">💵 نقدًا</option>
+          <option value="card">💳 بطاقة</option>
+          <option value="transfer">🏦 تحويل</option>
+        </select>
+      </div>
+      <div class="flex flex-col justify-end">
+        <p class="text-xs text-blue-600 font-semibold">الإجمالي بعد الخصم</p>
+        <p class="text-lg font-bold text-green-600" x-text="formatCurrency(total - discount)"></p>
+      </div>
+    </div>
+
+    <!-- 📝 الملاحظات -->
+    <div>
+      <label class="block text-xs font-medium text-gray-700 mb-1">ملاحظات</label>
+      <textarea name="notes" rows="1" 
+                class="w-full rounded-md border border-gray-300 p-2 text-sm"></textarea>
+    </div>
+
+    <!-- ✅ زر الدفع والطباعة -->
+    <div class="flex justify-end pt-3 border-t border-gray-100">
+      <button type="submit"
+              class="px-5 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 shadow-sm text-sm flex items-center gap-2">
+        💳 دفع و طباعة
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- 🧠 Alpine.js -->
+<script>
+function invoiceForm() {
+  return {
+    patientSearch: '',
+    patients: [],
+    selectedPatient: null,
+    discount: 0,
+    total: 25000,
+
+    async searchPatients() {
+      if (this.patientSearch.length < 2) { this.patients = []; return; }
+      const res = await fetch(`/invoices/patient-search/?q=${this.patientSearch}`);
+      this.patients = await res.json();
+    },
+
+    selectPatient(p) {
+      this.selectedPatient = p;
+      this.patients = [];
+      this.patientSearch = p.name;
+    },
+
+    formatCurrency(v) {
+      return new Intl.NumberFormat('ar-IQ').format(v) + ' د.ع';
+    },
+
+    async submitForm(event) {
+      // إرسال الفاتورة للسيرفر
+      const form = event.target.closest("form");
+      const formData = new FormData(form);
+      const response = await fetch(form.action || window.location.pathname, {
+        method: "POST",
+        body: formData
+      });
+
+      if (response.ok) {
+        // فتح نافذة الطباعة فورًا
+        window.open('/invoices/print/latest/', '_blank');
+        window.location.href = '/invoices/';
+      } else {
+        alert('حدث خطأ أثناء الحفظ!');
+      }
+    },
+
+    init() { this.total = 25000; }
+  }
+}
+</script>
+
+{% endblock %}

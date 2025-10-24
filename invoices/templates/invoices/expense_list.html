@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="p-6 space-y-6">
+
+  <div class="flex justify-between items-center flex-wrap gap-3">
+    <h1 class="text-2xl font-bold text-gray-800">{{ label }}</h1>
+
+    <div class="flex gap-3">
+      <a href="?filter=today" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">اليوم</a>
+      <a href="?filter=yesterday" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition text-sm">الأمس</a>
+      <a href="?filter=all" class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition text-sm">الكل</a>
+      <a href="{% url 'invoices:list' %}" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-sm">عودة للفواتير</a>
+    </div>
+  </div>
+
+  <div class="bg-white border rounded-xl shadow-sm overflow-hidden">
+    <table class="min-w-full text-sm text-left">
+      <thead class="bg-gray-100 text-gray-700 text-xs uppercase">
+        <tr>
+          <th class="px-6 py-3">العنوان</th>
+          <th class="px-6 py-3">الفئة</th>
+          <th class="px-6 py-3">المبلغ</th>
+          <th class="px-6 py-3">التاريخ</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for expense in expenses %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-3 font-medium text-gray-800">{{ expense.title }}</td>
+          <td class="px-6 py-3 text-gray-600">{{ expense.category }}</td>
+          <td class="px-6 py-3 text-orange-600 font-semibold">{{ expense.amount|floatformat:0 }} د.ع</td>
+          <td class="px-6 py-3 text-gray-500">{{ expense.date|date:"Y-m-d h:i A" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-center py-6 text-gray-500">لا توجد نفقات حالياً.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="text-right text-gray-600 text-sm font-medium">
+    <p>إجمالي النفقات: <span class="text-orange-600 font-bold">{{ total|floatformat:0 }} د.ع</span></p>
+  </div>
+
+</div>
+
+{% endblock %}

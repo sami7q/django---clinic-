@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     "patients",
     "appointments",
     "invoices",
+    'django.contrib.humanize',
     "dashboard",
     "licensing",
 ]

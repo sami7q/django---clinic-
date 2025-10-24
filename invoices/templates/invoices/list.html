@@ -1,70 +1,120 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="p-6 space-y-6">
+<div class="p-8 space-y-10">
 
-  <!-- ✅ العنوان + زر الإضافة -->
-  <div class="flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-gray-800">قائمة الفواتير 💵</h1>
-    <a href="{% url 'invoices:create' %}" 
-       class="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition text-sm font-medium shadow">
-      + إضافة فاتورة جديدة
+  <!-- 🔹 العنوان + الأزرار -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <h1 class="text-2xl font-bold text-gray-800 tracking-tight">إدارة الفواتير والنفقات</h1>
+
+    <div class="flex gap-3">
+      <!-- زر إنشاء فاتورة -->
+      <a href="{% url 'invoices:create' %}" 
+         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium shadow-sm">
+        + إنشاء فاتورة جديدة
+      </a>
+
+      <!-- زر إضافة نفقات -->
+      <a href="{% url 'invoices:expense_create' %}" 
+         class="px-4 py-2 text-white rounded-lg text-sm font-medium shadow-sm transition"
+         style="background-color:#f97316; border:1px solid #f97316;"
+         onmouseover="this.style.backgroundColor='#ea580c'"
+         onmouseout="this.style.backgroundColor='#f97316'">
+        + إضافة نفقات
+      </a>
+    </div>
+  </div>
+
+  <!-- 🧭 أزرار الفلاتر -->
+  <div class="flex flex-wrap gap-3">
+    <a href="{% url 'invoices:filter' 'today' %}" 
+       class="px-4 py-1.5 rounded-lg text-sm font-medium 
+              {% if filter_label == 'فواتير اليوم' %}bg-blue-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+      فواتير اليوم
+    </a>
+    <a href="{% url 'invoices:filter' 'yesterday' %}" 
+       class="px-4 py-1.5 rounded-lg text-sm font-medium 
+              {% if filter_label == 'فواتير الأمس' %}bg-blue-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+      فواتير الأمس
+    </a>
+    <a href="{% url 'invoices:filter' 'all' %}" 
+       class="px-4 py-1.5 rounded-lg text-sm font-medium 
+              {% if filter_label == 'جميع الفواتير' %}bg-blue-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+      جميع الفواتير
+    </a>
+
+    <a href="{% url 'invoices:expense_list' %}" 
+       class="px-4 py-1.5 rounded-lg text-sm font-medium 
+              {% if 'نفقات' in filter_label %}bg-orange-500 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+      النفقات
     </a>
   </div>
 
-  <!-- 💰 الإحصائيات السريعة -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <div class="bg-green-50 border border-green-200 rounded-2xl p-4 shadow-sm">
-      <p class="text-sm text-gray-600">إجمالي الدخل</p>
-      <p class="text-2xl font-bold text-green-700">{{ total_income }} IQD</p>
+  <!-- 💰 الإحصائيات -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <p class="text-sm text-gray-500">إجمالي الدخل</p>
+      <p class="text-2xl font-bold text-green-600 mt-1">{{ total_revenue|default:"0" }} د.ع</p>
     </div>
-    <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-4 shadow-sm">
-      <p class="text-sm text-gray-600">الفواتير غير المدفوعة</p>
-      <p class="text-2xl font-bold text-yellow-700">{{ unpaid_count }}</p>
+
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <p class="text-sm text-gray-500">إجمالي النفقات</p>
+      <p class="text-2xl font-bold text-orange-500 mt-1">{{ total_expenses|default:"0" }} د.ع</p>
     </div>
-    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 shadow-sm">
-      <p class="text-sm text-gray-600">عدد الفواتير</p>
-      <p class="text-2xl font-bold text-blue-700">{{ invoice_count }}</p>
+
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <p class="text-sm text-gray-500">عدد الفواتير</p>
+      <p class="text-2xl font-bold text-blue-600 mt-1">{{ invoice_count }}</p>
     </div>
   </div>
 
   <!-- 🧾 جدول الفواتير -->
-  <div class="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden">
+  <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
     <table class="min-w-full text-sm text-left">
-      <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
+      <thead class="bg-gray-100 text-gray-700 text-xs uppercase">
         <tr>
+          <th class="px-6 py-3">رقم</th>
           <th class="px-6 py-3">المريض</th>
           <th class="px-6 py-3">المبلغ</th>
           <th class="px-6 py-3">الحالة</th>
           <th class="px-6 py-3">التاريخ</th>
-          <th class="px-6 py-3 text-right">الإجراء</th>
+          <th class="px-6 py-3 text-right">الإجراءات</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="divide-y divide-gray-100">
         {% for invoice in invoices %}
-        <tr class="border-b hover:bg-gray-50 transition">
-          <td class="px-6 py-3 font-medium text-gray-800">{{ invoice.patient.name }}</td>
-          <td class="px-6 py-3 font-semibold text-green-700">{{ invoice.consultation_fee }} IQD</td>
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-6 py-3 text-gray-600 font-medium">#{{ invoice.invoice_number }}</td>
+          <td class="px-6 py-3 text-gray-800 font-medium">{{ invoice.patient.name }}</td>
+          <td class="px-6 py-3 font-semibold text-green-700">{{ invoice.paid_amount|floatformat:0 }} د.ع</td>
           <td class="px-6 py-3">
-            {% if invoice.paid %}
+            {% if invoice.status == "مدفوعة" %}
               <span class="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">مدفوعة</span>
+            {% elif invoice.status == "مؤجلة" %}
+              <span class="px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-medium rounded-full">مؤجلة</span>
             {% else %}
               <span class="px-3 py-1 bg-red-100 text-red-600 text-xs font-medium rounded-full">غير مدفوعة</span>
             {% endif %}
           </td>
           <td class="px-6 py-3 text-gray-600">{{ invoice.date|date:"Y-m-d - h:i A" }}</td>
-          <td class="px-6 py-3 text-right space-x-2">
+          <td class="px-6 py-3 text-right space-x-2 rtl:space-x-reverse">
             <a href="{% url 'invoices:update' invoice.id %}" 
-               class="text-blue-600 hover:underline">✏️ تعديل</a>
+               class="inline-block px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded-md border border-blue-200 hover:bg-blue-100 transition">
+              تعديل
+            </a>
             <a href="{% url 'invoices:delete' invoice.id %}" 
-               class="text-red-600 hover:underline">🗑️ حذف</a>
+               class="inline-block px-3 py-1.5 text-sm bg-red-50 text-red-700 rounded-md border border-red-200 hover:bg-red-100 transition">
+              حذف
+            </a>
+            <a href="{% url 'invoices:print' invoice.id %}" 
+               class="inline-block px-3 py-1.5 text-sm bg-gray-50 text-gray-700 rounded-md border border-gray-200 hover:bg-gray-100 transition">
+              طباعة
+            </a>
           </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="5" class="text-center py-6 text-gray-500">
-            لا توجد فواتير حالياً
-          </td>
+          <td colspan="6" class="text-center py-6 text-gray-500">لا توجد فواتير حالياً</td>
         </tr>
         {% endfor %}
       </tbody>

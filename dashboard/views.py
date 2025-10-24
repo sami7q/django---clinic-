@@ -7,12 +7,19 @@ from django.contrib.auth.models import User
 from datetime import date, timedelta
 
 def home(request):
+    # 🔹 إحصائيات عامة
     total_patients = Patient.objects.count()
     today_patients = Patient.objects.filter(created_at__date=date.today()).count()
     total_appointments = Appointment.objects.count()
     recent_appointments = Appointment.objects.filter(date__gte=date.today() - timedelta(days=1)).count()
-    total_invoices = Invoice.objects.aggregate(total=Sum('consultation_fee'))['total'] or 0
-    this_week_invoices = Invoice.objects.filter(date__gte=date.today() - timedelta(days=7)).aggregate(total=Sum('consultation_fee'))['total'] or 0
+    
+    # 🔹 الفواتير والإيرادات
+    total_invoices = Invoice.objects.aggregate(total=Sum("total_amount"))['total'] or 0
+    this_week_invoices = Invoice.objects.filter(
+        date__gte=date.today() - timedelta(days=7)
+    ).aggregate(total=Sum("total_amount"))['total'] or 0
+
+    # 🔹 المستخدمين والمرضى الجدد
     users_count = User.objects.count()
     recent_patients = Patient.objects.order_by('-created_at')[:5]
 

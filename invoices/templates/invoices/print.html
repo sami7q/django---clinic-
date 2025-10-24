@@ -1,0 +1,178 @@
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>فاتورة رقم {{ invoice.invoice_number }}</title>
+  <style>
+    * {
+      font-family: "Tajawal", Arial, sans-serif;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f8f9fa;
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      direction: rtl;
+      font-size: 12px;
+    }
+
+    .invoice {
+      width: 80mm; /* ✅ عرض صغير يناسب الطابعات الحرارية */
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #1d4ed8;
+      margin-bottom: 3px;
+      font-size: 16px;
+    }
+
+    .invoice-number {
+      text-align: center;
+      color: #555;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+
+    .info {
+      margin-bottom: 10px;
+      line-height: 1.5;
+      color: #333;
+    }
+
+    .info p {
+      margin: 2px 0;
+    }
+
+    .info strong {
+      color: #000;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 5px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 4px;
+      text-align: center;
+      font-size: 11px;
+    }
+
+    th {
+      background-color: #f3f4f6;
+      font-weight: 600;
+    }
+
+    .totals {
+      margin-top: 8px;
+      border-top: 1px dashed #ccc;
+      padding-top: 5px;
+    }
+
+    .totals p {
+      margin: 3px 0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+    }
+
+    .signature {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 10px;
+      color: #555;
+    }
+
+    .signature hr {
+      margin-top: 6px;
+      border: none;
+      border-top: 1px dashed #aaa;
+      width: 70%;
+    }
+
+    /* 🌿 زر الطباعة */
+    .print-btn {
+      display: block;
+      margin: 10px auto 0;
+      padding: 4px 10px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 11px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: background 0.3s ease;
+    }
+
+    .print-btn:hover {
+      background: #1d4ed8;
+    }
+
+    @media print {
+      body { background: white; }
+      .invoice { box-shadow: none; border: none; }
+      .print-btn { display: none !important; } /* ✅ يخفي الزر عند الطباعة */
+    }
+  </style>
+</head>
+<body>
+
+  <div class="invoice">
+    <h2>{{ invoice.clinic_name }}</h2>
+    <p class="invoice-number">فاتورة رقم #{{ invoice.invoice_number }}</p>
+
+    <div class="info">
+      <p><strong>المريض:</strong> {{ invoice.patient.name }}</p>
+      <p><strong>الطبيب:</strong> {% if invoice.doctor %}{{ invoice.doctor.get_full_name|default:invoice.doctor.username }}{% else %}—{% endif %}</p>
+      <p><strong>التاريخ:</strong> {{ invoice.date|date:"j F Y, h:i a" }}</p>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>الوصف</th>
+          <th>الكمية</th>
+          <th>السعر</th>
+          <th>الإجمالي</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in invoice.items.all %}
+        <tr>
+          <td>{{ item.description }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.unit_price|intcomma }}</td>
+          <td>{{ item.total|intcomma }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="totals">
+      <p><span>الخصم:</span> <span>{{ invoice.discount|intcomma }} د.ع</span></p>
+      <p><span>الإجمالي النهائي:</span> <strong>{{ invoice.paid_amount|intcomma }} د.ع</strong></p>
+    </div>
+
+    <div class="signature">
+      <p>نشكر زيارتكم وثقتكم بنا</p>
+      <hr>
+      <p>توقيع الطبيب</p>
+    </div>
+  </div>
+
+  <button class="print-btn" onclick="window.print()">🖨️ طباعة</button>
+
+</body>
+</html>
