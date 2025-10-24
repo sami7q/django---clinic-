@@ -88,5 +88,6 @@ LOGOUT_REDIRECT_URL = "login"
 # مستخدمين أدوار بسيطة عبر مجموعات، وسنستخدم User الافتراضي الآن
 # يمكننا لاحقًا تبديل AUTH_USER_MODEL إذا احتجت CustomUser
 
+
 # إعدادات التطوير
 INTERNAL_IPS = ["127.0.0.1", "localhost"]

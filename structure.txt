@@ -1,0 +1,96 @@
+.
+├── appointments
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── templates
+│   │   └── appointments
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── clinic
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── core
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── signals.py
+│   └── tests.py
+├── dashboard
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── templates
+│   │   └── dashboard
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── db.sqlite3
+├── invoices
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── templates
+│   │   └── invoices
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── licensing
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── middleware.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── manage.py
+├── package.json
+├── patients
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── templates
+│   │   └── patients
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── static
+│   └── css
+│       └── app.css
+├── structure.txt
+├── tailwind.config.js
+├── templates
+│   ├── assets.css
+│   ├── base.html
+│   ├── includes
+│   │   ├── license_badge.html
+│   │   ├── navbar.html
+│   │   └── sidebar.html
+│   ├── licensing
+│   │   ├── activate.html
+│   │   └── status.html
+│   └── registration
+│       └── login.html
+└── users
+    ├── __init__.py
+    ├── admin.py
+    ├── apps.py
+    ├── models.py
+    ├── tests.py
+    ├── urls.py
+    └── views.py
+
+23 directories, 71 files
