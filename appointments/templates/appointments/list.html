@@ -1,111 +1,113 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div x-data="appointmentsList()" x-init="init()" class="p-8 max-w-7xl mx-auto bg-gradient-to-br from-blue-50 via-white to-blue-100 rounded-3xl shadow-lg border border-blue-100">
+<div x-data="appointmentsList()" x-init="init()" class="p-8 max-w-6xl mx-auto bg-white rounded-3xl shadow-lg border border-gray-100">
 
-  <!-- العنوان + زر إضافة -->
+  <!-- 🧭 العنوان + الأزرار -->
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-8">
-    <h1 class="text-3xl font-extrabold text-blue-800 flex items-center gap-2 tracking-tight">📋 قائمة المواعيد</h1>
+    <h1 class="text-2xl font-bold text-blue-800">
+      {% if show_all %}📜 جميع المواعيد{% else %}📅 المواعيد القادمة{% endif %}
+    </h1>
 
-    <a href="{% url 'appointments:create' %}"
-       class="bg-blue-600 text-white px-5 py-2.5 rounded-xl shadow hover:bg-blue-700 active:scale-[0.98] transition-all">
-      + إضافة موعد جديد
-    </a>
+    <div class="flex gap-2">
+      {% if not show_all %}
+        <a href="{% url 'appointments:all' %}"
+           class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg border hover:bg-gray-200 transition text-sm">
+          📜 جميع المواعيد
+        </a>
+      {% else %}
+        <a href="{% url 'appointments:list' %}"
+           class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg border hover:bg-gray-200 transition text-sm">
+          📅 المواعيد القادمة
+        </a>
+      {% endif %}
+      <a href="{% url 'appointments:create' %}"
+         class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 text-sm transition">
+        + إضافة موعد
+      </a>
+    </div>
   </div>
 
-  <!-- شريط الأدوات -->
-  <div class="bg-white/90 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200 p-5 mb-6 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+  <!-- 🔍 شريط الفلترة -->
+  <div class="bg-gray-50 rounded-2xl border border-gray-200 p-4 mb-6 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
     <input type="text"
            x-model="searchQuery"
            placeholder="🔍 ابحث بالاسم أو رقم الهاتف..."
-           class="w-full md:w-1/3 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100 outline-none">
+           class="w-full md:w-1/3 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100 outline-none">
 
     <div class="flex gap-2">
-      <select x-model="statusFilter" class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-100">
+      <select x-model="statusFilter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-100">
         <option value="">كل الحالات</option>
         <option value="قيد الانتظار">🕓 قيد الانتظار</option>
         <option value="مكتمل">✅ مكتمل</option>
         <option value="ملغي">❌ ملغي</option>
       </select>
 
-      <select x-model="dateFilter" class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-100">
+      <select x-model="dateFilter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-100">
         <option value="">كل الأيام</option>
         <option value="today">📅 اليوم</option>
+        <option value="tomorrow">🗓️ غدًا</option>
         <option value="week">📆 هذا الأسبوع</option>
         <option value="month">🗓️ هذا الشهر</option>
       </select>
     </div>
   </div>
 
-  <!-- عداد النتائج -->
-  <div class="flex items-center justify-between mb-4">
-    <p class="text-sm text-gray-600" x-text="`النتائج: ${filteredAppointments().length}`"></p>
-    <p class="text-xs text-gray-400 italic">* مرتبة حسب الأقرب تلقائيًا</p>
-  </div>
+  <!-- 📋 جدول المواعيد -->
+  <div class="overflow-x-auto rounded-2xl border border-gray-200 bg-white">
+    <table class="min-w-full text-sm text-gray-700">
+      <thead class="bg-blue-50 text-blue-800 text-xs uppercase font-semibold border-b">
+        <tr>
+          <th class="px-5 py-3 text-right">المريض</th>
+          <th class="px-5 py-3 text-right">التاريخ</th>
+          <th class="px-5 py-3 text-right">الوقت</th>
+          <th class="px-5 py-3 text-right">الحالة</th>
+          <th class="px-5 py-3 text-right">السبب</th>
+          <th class="px-5 py-3 text-center">إجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <template x-if="filteredAppointments().length > 0">
+          <template x-for="appt in filteredAppointments()" :key="appt.id">
+            <tr class="border-b hover:bg-blue-50/50 transition" :class="{'opacity-60': isPast(appt)}">
+              <td class="px-5 py-3 font-semibold text-gray-800" x-text="appt.patient"></td>
+              <td class="px-5 py-3" x-text="formatDate(appt.date)"></td>
+              <td class="px-5 py-3" x-text="formatTime(appt.time)"></td>
+              <td class="px-5 py-3">
+                <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border"
+                      :class="statusClass(appt.status)">
+                  <span class="w-2 h-2 rounded-full" :class="dotClass(appt.status)"></span>
+                  <span x-text="appt.status"></span>
+                </span>
+              </td>
+              <td class="px-5 py-3 text-gray-600 truncate max-w-[200px]" x-text="appt.reason || '—'"></td>
+              <td class="px-5 py-3 text-center">
+                <div class="flex justify-center gap-2">
+                  <a :href="appt.edit_url"
+                     class="px-3 py-1.5 bg-blue-500/10 text-blue-700 border border-blue-300 rounded-lg text-xs font-medium hover:bg-blue-500 hover:text-white transition">
+                     ✏️ تعديل
+                  </a>
+                  <a :href="appt.delete_url"
+                     class="px-3 py-1.5 bg-red-500/10 text-red-700 border border-red-300 rounded-lg text-xs font-medium hover:bg-red-500 hover:text-white transition">
+                     🗑️ حذف
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </template>
+        </template>
 
-  <!-- شبكة البطاقات -->
-  <template x-if="filteredAppointments().length > 0">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-      <template x-for="appt in filteredAppointments()" :key="appt.id">
-        <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
-          
-          <!-- التاريخ والوقت -->
-          <div class="text-sm text-blue-700 font-semibold mb-2">
-            <span class="flex items-center gap-1">
-              🗓️ <span x-text="formattedDateTime(appt)"></span>
-            </span>
-          </div>
-
-          <!-- اسم المريض -->
-          <h3 class="text-lg font-bold text-gray-800 mb-1 truncate" x-text="appt.patient"></h3>
-
-          <!-- السبب -->
-          <p class="text-gray-600 text-sm mb-3 line-clamp-2 leading-relaxed" x-text="appt.reason || '—'"></p>
-
-          <!-- الحالة والأزرار -->
-          <div class="flex items-center justify-between mt-auto pt-2">
-  <!-- شارة الحالة -->
-  <span class="inline-flex items-center gap-1.5 text-[12px] font-semibold px-2.5 py-1 rounded-full border"
-        :class="statusClass(appt.status)">
-    <span class="w-2 h-2 rounded-full" :class="dotClass(appt.status)"></span>
-    <span x-text="appt.status"></span>
-  </span>
-
-  <!-- أزرار التحكم -->
-  <div class="flex gap-2">
-    <a :href="appt.edit_url"
-       class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg 
-              bg-blue-500/10 text-blue-700 border border-blue-300 
-              hover:bg-blue-500 hover:text-white hover:shadow-md hover:scale-[1.03]
-              active:scale-[0.98] transition-all duration-200 ease-in-out">
-       <i class="ph ph-pencil-simple text-sm"></i>
-       تعديل
-    </a>
-
-    <a :href="appt.delete_url"
-       class="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg 
-              bg-red-500/10 text-red-700 border border-red-300 
-              hover:bg-red-500 hover:text-white hover:shadow-md hover:scale-[1.03]
-              active:scale-[0.98] transition-all duration-200 ease-in-out">
-       <i class="ph ph-trash text-sm"></i>
-       حذف
-    </a>
+        <template x-if="filteredAppointments().length === 0">
+          <tr>
+            <td colspan="6" class="text-center text-gray-500 py-6 text-sm">لا توجد مواعيد مطابقة للبحث أو الفلاتر الحالية.</td>
+          </tr>
+        </template>
+      </tbody>
+    </table>
   </div>
 </div>
 
-
-        </div>
-      </template>
-    </div>
-  </template>
-
-  <!-- لا توجد نتائج -->
-  <template x-if="filteredAppointments().length === 0">
-    <p class="text-gray-500 text-center mt-10 text-sm">لا توجد مواعيد مطابقة للبحث أو الفلاتر الحالية.</p>
-  </template>
-
-</div>
-
+<!-- ⚙️ سكربت -->
 <script>
 function appointmentsList() {
   return {
@@ -116,43 +118,43 @@ function appointmentsList() {
     now: new Date(),
 
     init() {
-      this.allAppointments.sort((a, b) => this.compareAppts(a, b));
+      this.allAppointments.sort((a, b) => this.toDateObj(a) - this.toDateObj(b));
     },
 
     normalizeTo24(timeStr) {
       if (!timeStr) return '00:00';
-      const m24 = /^(\d{1,2}):(\d{2})$/.exec(timeStr);
-      if (m24) return `${m24[1].padStart(2, '0')}:${m24[2]}`;
-      const m12en = /^(\d{1,2}):(\d{2})\s*([AP]M)$/i.exec(timeStr);
-      if (m12en) {
-        let h = parseInt(m12en[1], 10);
-        const mm = m12en[2];
-        const ampm = m12en[3].toUpperCase();
+      const match = /^(\d{1,2}):(\d{2})\s*([AP]M)?$/i.exec(timeStr);
+      if (!match) return timeStr;
+      let [_, h, m, ampm] = match;
+      h = parseInt(h);
+      if (ampm) {
+        ampm = ampm.toUpperCase();
         if (ampm === 'PM' && h !== 12) h += 12;
         if (ampm === 'AM' && h === 12) h = 0;
-        return `${String(h).padStart(2, '0')}:${mm}`;
       }
-      const arToEn = s => (s || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
-      const t = arToEn(timeStr);
-      const m12ar = /^(\d{1,2}):(\d{2})\s*([صم])$/.exec(t);
-      if (m12ar) {
-        let h = parseInt(m12ar[1], 10);
-        const mm = m12ar[2];
-        const mer = m12ar[3];
-        if (mer === 'م' && h !== 12) h += 12;
-        if (mer === 'ص' && h === 12) h = 0;
-        return `${String(h).padStart(2, '0')}:${mm}`;
-      }
-      return '00:00';
+      return `${String(h).padStart(2, '0')}:${m}`;
     },
 
     toDateObj(appt) {
-      const time24 = appt.time_24 ? appt.time_24 : this.normalizeTo24(appt.time);
-      return new Date(`${appt.date}T${time24}:00`);
+      return new Date(`${appt.date}T${this.normalizeTo24(appt.time)}:00`);
     },
 
-    compareAppts(a, b) {
-      return this.toDateObj(a) - this.toDateObj(b);
+    isPast(appt) {
+      return this.toDateObj(appt) < this.now;
+    },
+
+    formatDate(dateStr) {
+      const d = new Date(dateStr);
+      return `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+    },
+
+    formatTime(timeStr) {
+      const [h, m] = this.normalizeTo24(timeStr).split(':');
+      let hour = parseInt(h);
+      const suffix = hour >= 12 ? 'م' : 'ص';
+      if (hour > 12) hour -= 12;
+      if (hour === 0) hour = 12;
+      return `${hour}:${m} ${suffix}`;
     },
 
     statusClass(status) {
@@ -162,50 +164,47 @@ function appointmentsList() {
       return 'bg-gray-50 text-gray-700 border-gray-200';
     },
 
-    formattedDateTime(appt) {
-      const date = new Date(appt.date);
-      const weekdayNames = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
-      const monthNames = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
-      const dayName = weekdayNames[date.getDay()];
-      const day = date.getDate();
-      const month = monthNames[date.getMonth()];
-      const [hourStr, minute] = this.normalizeTo24(appt.time).split(':');
-      let hour = parseInt(hourStr);
-      const suffix = hour >= 12 ? "مساءً" : "صباحًا";
-      if (hour > 12) hour -= 12;
-      if (hour === 0) hour = 12;
-      const timeFormatted = `${hour}:${minute} ${suffix}`;
-      return `${dayName}، ${day} ${month} ${date.getFullYear()} - ${timeFormatted}`;
+    dotClass(status) {
+      if (status === 'قيد الانتظار') return 'bg-yellow-500';
+      if (status === 'مكتمل') return 'bg-green-500';
+      if (status === 'ملغي') return 'bg-red-500';
+      return 'bg-gray-400';
     },
 
     filteredAppointments() {
-      let results = this.allAppointments.filter(a => {
-        const q = this.searchQuery.trim().toLowerCase();
-        const matchSearch =
-          !q ||
-          (a.patient && a.patient.toLowerCase().includes(q)) ||
-          (a.phone && String(a.phone).includes(q));
-        const matchStatus = !this.statusFilter || a.status === this.statusFilter;
+      const q = this.searchQuery.trim().toLowerCase();
+      return this.allAppointments.filter(a => {
         const apptDate = this.toDateObj(a);
+        const matchSearch = !q || (a.patient && a.patient.toLowerCase().includes(q)) || (a.phone && String(a.phone).includes(q));
+        const matchStatus = !this.statusFilter || a.status === this.statusFilter;
         let matchDate = true;
+
+        // اليوم
         if (this.dateFilter === 'today') {
-          const dn = new Date(this.now.getFullYear(), this.now.getMonth(), this.now.getDate());
-          const da = new Date(apptDate.getFullYear(), apptDate.getMonth(), apptDate.getDate());
-          matchDate = da.getTime() === dn.getTime();
+          const today = new Date(this.now.getFullYear(), this.now.getMonth(), this.now.getDate());
+          matchDate = apptDate.toDateString() === today.toDateString();
+
+        // غدًا
+        } else if (this.dateFilter === 'tomorrow') {
+          const tomorrow = new Date(this.now);
+          tomorrow.setDate(this.now.getDate() + 1);
+          matchDate = apptDate.toDateString() === tomorrow.toDateString();
+
+        // هذا الأسبوع
         } else if (this.dateFilter === 'week') {
-          const start = new Date(this.now.getFullYear(), this.now.getMonth(), this.now.getDate());
-          const end = new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000);
+          const start = new Date(this.now);
+          const end = new Date(start);
+          end.setDate(start.getDate() + 7);
           matchDate = apptDate >= start && apptDate < end;
+
+        // هذا الشهر
         } else if (this.dateFilter === 'month') {
-          matchDate =
-            apptDate.getMonth() === this.now.getMonth() &&
-            apptDate.getFullYear() === this.now.getFullYear();
+          matchDate = apptDate.getMonth() === this.now.getMonth() && apptDate.getFullYear() === this.now.getFullYear();
         }
+
         return matchSearch && matchStatus && matchDate;
       });
-      results.sort((a, b) => this.compareAppts(a, b));
-      return results;
-    }
+    },
   };
 }
 </script>

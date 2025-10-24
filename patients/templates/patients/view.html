@@ -22,8 +22,17 @@
       <h2 class="text-xl font-semibold text-blue-700">{{ patient.name }}</h2>
     </div>
 
-    <div class="space-y-2 text-[15px]">
+    <div class="space-y-2 text-[15px] leading-relaxed">
       <p><strong>📅 العمر:</strong> {{ patient.age }} سنة</p>
+      <p><strong>🚻 الجنس:</strong>
+        {% if patient.gender == "ذكر" %}
+          👨 ذكر
+        {% elif patient.gender == "أنثى" %}
+          👩 أنثى
+        {% else %}
+          غير محدد
+        {% endif %}
+      </p>
       <p><strong>📞 رقم الهاتف:</strong> {{ patient.phone|default:"غير محدد" }}</p>
       <p><strong>🩹 التشخيص:</strong> {{ patient.diagnosis|default:"—" }}</p>
       <p><strong>📝 الملاحظات:</strong> {{ patient.notes|default:"لا توجد ملاحظات" }}</p>

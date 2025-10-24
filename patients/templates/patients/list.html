@@ -2,24 +2,47 @@
 {% load static %}
 {% block content %}
 
-<div class="p-6">
+<div x-data="patientsList()" x-init="init()" class="p-6 max-w-6xl mx-auto">
 
-  <!-- العنوان + زر الإضافة -->
-  <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">قائمة المرضى 🧾</h1>
+  <!-- 🧭 العنوان + زر الإضافة -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">قائمة المرضى</h1>
+
     <a href="{% url 'patients:create' %}" 
-       class="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+       class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
       + إضافة مريض جديد
     </a>
   </div>
 
-  <!-- جدول المرضى -->
+  <!-- 🔍 أدوات التصفية -->
+  <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm mb-6 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
+    <input type="text"
+           x-model="searchQuery"
+           placeholder="🔍 ابحث بالاسم أو رقم الهاتف..."
+           class="w-full md:w-1/3 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100 outline-none">
+
+    <div class="flex gap-2">
+      <select x-model="genderFilter" class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-100">
+        <option value="">كل المرضى</option>
+        <option value="ذكر">الذكور</option>
+        <option value="أنثى">الإناث</option>
+      </select>
+
+      <button @click="resetFilters"
+              class="px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 transition">
+        🔄 إعادة تعيين
+      </button>
+    </div>
+  </div>
+
+  <!-- 📋 جدول المرضى -->
   <div class="bg-white shadow rounded-2xl overflow-hidden border border-gray-200">
     <table class="min-w-full text-sm text-right">
       <thead class="bg-gray-100 text-gray-700 text-xs uppercase">
         <tr>
           <th class="px-6 py-3">الاسم</th>
           <th class="px-6 py-3">العمر</th>
+          <th class="px-6 py-3">الجنس</th>
           <th class="px-6 py-3">الهاتف</th>
           <th class="px-6 py-3">التشخيص</th>
           <th class="px-6 py-3">تاريخ التسجيل</th>
@@ -28,42 +51,82 @@
       </thead>
 
       <tbody class="divide-y divide-gray-100">
-        {% for patient in patients %}
-        <tr class="hover:bg-gray-50 transition">
-          <td class="px-6 py-3 font-medium text-gray-900">{{ patient.name }}</td>
-          <td class="px-6 py-3 text-gray-700">{{ patient.age }}</td>
-          <td class="px-6 py-3 text-gray-700">{{ patient.phone|default:"—" }}</td>
-          <td class="px-6 py-3 text-gray-700">{{ patient.diagnosis|default:"—" }}</td>
-          <td class="px-6 py-3 text-gray-500">{{ patient.created_at|date:"Y/m/d" }}</td>
-          <td class="px-6 py-3 text-center">
-            <div class="flex justify-center gap-2">
-              
-              <!-- زر عرض -->
-              <a href="{% url 'patients:view' patient.id %}"
-                 class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
-                عرض
-              </a>
+        <template x-for="p in filteredPatients()" :key="p.id">
+          <tr class="hover:bg-gray-50 transition">
+            <td class="px-6 py-3 font-medium text-gray-900" x-text="p.name"></td>
+            <td class="px-6 py-3 text-gray-700" x-text="p.age"></td>
+            <td class="px-6 py-3 text-gray-700" x-text="p.gender || '—'"></td>
+            <td class="px-6 py-3 text-gray-700" x-text="p.phone || '—'"></td>
+            <td class="px-6 py-3 text-gray-700" x-text="p.diagnosis || '—'"></td>
+            <td class="px-6 py-3 text-gray-500" x-text="formatDate(p.created_at)"></td>
+            <td class="px-6 py-3 text-center">
+              <div class="flex justify-center gap-2">
+                <a :href="`/patients/${p.id}/view/`"
+                   class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                  عرض
+                </a>
+                <a :href="`/patients/${p.id}/delete/`"
+                   class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                  حذف
+                </a>
+              </div>
+            </td>
+          </tr>
+        </template>
 
-              <!-- زر حذف يفتح صفحة التأكيد -->
-              <a href="{% url 'patients:delete' patient.id %}"
-                 class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
-                حذف
-              </a>
-
-            </div>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-            لا يوجد مرضى حتى الآن.
-          </td>
-        </tr>
-        {% endfor %}
+        <template x-if="filteredPatients().length === 0">
+          <tr>
+            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+              لا توجد نتائج مطابقة.
+            </td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </div>
-
 </div>
+
+<!-- ⚙️ سكربت التصفية -->
+<script>
+function patientsList() {
+  return {
+    allPatients: {{ patients_json|safe }},
+    searchQuery: '',
+    genderFilter: '',
+
+    init() {},
+
+    resetFilters() {
+      this.searchQuery = '';
+      this.genderFilter = '';
+    },
+
+    filteredPatients() {
+      const q = this.searchQuery.trim().toLowerCase();
+      const g = this.genderFilter.trim().toLowerCase();
+
+      return this.allPatients.filter(p => {
+        const matchSearch =
+          !q ||
+          (p.name && p.name.toLowerCase().includes(q)) ||
+          (p.phone && p.phone.toLowerCase().includes(q));
+
+        const genderVal = (p.gender || '').trim().toLowerCase();
+        const matchGender = !g || genderVal === g;
+
+        return matchSearch && matchGender;
+      });
+    },
+
+    formatDate(iso) {
+      const d = new Date(iso);
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      // 👇 النتيجة: "Oct 24, 2025"
+      return d.toLocaleDateString('en-US', options);
+    }
+  };
+}
+</script>
+
 
 {% endblock %}

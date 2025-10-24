@@ -19,15 +19,93 @@
   <form method="POST" class="space-y-8">
     {% csrf_token %}
 
-    <!-- 🔹 اختيار المريض -->
-    {% include 'appointments/_patients_dropdown.html' %}
+    <!-- 🔹 اختيار المريض + إضافة جديدة -->
+    <div x-data="patientSearch()" class="relative">
+      <label class="block text-gray-700 font-medium mb-2">👤 اختيار المريض</label>
+
+      <div class="flex gap-2">
+        <input
+          type="text"
+          x-model="query"
+          @input.debounce.400ms="searchPatients"
+          placeholder="ابحث بالاسم أو رقم الهاتف..."
+          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-blue-500 focus:ring focus:ring-blue-100 outline-none"
+        >
+        <button type="button"
+                @click="showAddModal = true"
+                class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+          ➕
+        </button>
+      </div>
+
+      <!-- 🔽 نتائج البحث -->
+      <ul
+        x-show="results.length > 0"
+        class="absolute z-10 bg-white border border-gray-200 rounded-lg shadow mt-1 w-full max-h-48 overflow-y-auto"
+      >
+        <template x-for="p in results" :key="p.id">
+          <li
+            @click="selectPatient(p)"
+            class="px-3 py-2 text-sm hover:bg-blue-50 cursor-pointer flex justify-between"
+          >
+            <span x-text="p.name"></span>
+            <span class="text-gray-400 text-xs" x-text="p.phone"></span>
+          </li>
+        </template>
+      </ul>
+
+      <input type="hidden" name="patient" :value="selected ? selected.id : ''">
+
+      <!-- 🧩 نافذة إضافة مريض جديد -->
+      <div
+        x-show="showAddModal"
+        class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50"
+      >
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-gray-200 space-y-4 relative">
+          <button @click="showAddModal = false"
+                  class="absolute top-2 right-3 text-gray-400 hover:text-gray-600 text-xl">✕</button>
+          <h2 class="text-lg font-semibold text-blue-700 mb-4">➕ إضافة مريض جديد</h2>
+
+          <div class="space-y-3">
+            <input type="text" placeholder="الاسم الكامل" x-model="newPatient.name"
+                   class="w-full border rounded-lg px-3 py-2 text-sm focus:border-blue-500">
+            <input type="text" placeholder="رقم الهاتف" x-model="newPatient.phone"
+                   class="w-full border rounded-lg px-3 py-2 text-sm focus:border-blue-500">
+            <input type="number" placeholder="العمر" x-model="newPatient.age"
+                   class="w-full border rounded-lg px-3 py-2 text-sm focus:border-blue-500">
+            <select x-model="newPatient.gender"
+                    class="w-full border rounded-lg px-3 py-2 text-sm focus:border-blue-500">
+              <option value="">الجنس</option>
+              <option value="ذكر">ذكر</option>
+              <option value="أنثى">أنثى</option>
+            </select>
+            <textarea placeholder="التشخيص أو الملاحظات"
+                      x-model="newPatient.diagnosis"
+                      class="w-full border rounded-lg px-3 py-2 text-sm focus:border-blue-500"></textarea>
+          </div>
+
+          <div class="flex justify-end gap-3 pt-3">
+            <button type="button"
+                    @click="showAddModal = false"
+                    class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition">
+              إلغاء
+            </button>
+            <button type="button"
+                    @click="addPatient"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+              💾 حفظ
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- 🔹 اختيار التاريخ -->
     {% include 'appointments/_date_picker.html' %}
 
     <!-- 🔹 اختيار الوقت -->
     <div>
-      <label class="block text-gray-700 font-medium mb-1">اختيار الوقت:</label>
+      <label class="block text-gray-700 font-medium mb-1">🕒 اختيار الوقت:</label>
       <div class="grid grid-cols-6 gap-1">
         <template x-for="t in timeSlots" :key="t.value">
           <button type="button"
@@ -44,58 +122,22 @@
     </div>
 
     <!-- 🔹 السبب + الحالة -->
-    <!-- 🔹 السبب + الحالة -->
-<div class="mt-6 space-y-5">
+    <div class="mt-6 space-y-5">
+      <div>
+        <label class="block text-gray-700 font-medium mb-2">📝 سبب الزيارة:</label>
+        <textarea name="reason"
+                  class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none
+                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                  rows="2">{{ form.reason.value|default_if_none:'' }}</textarea>
+      </div>
 
-  <!-- سبب الزيارة -->
-  <div>
-    <label class="block text-gray-700 font-medium mb-2">سبب الزيارة:</label>
-    <textarea name="reason"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              rows="2">{{ form.reason.value|default_if_none:'' }}</textarea>
-  </div>
-
-  <!-- الحالة -->
-  <div>
-    <label class="block text-gray-700 font-medium mb-2">الحالة:</label>
-    <div class="relative inline-block w-full">
-      {{ form.status }}
+      <div>
+        <label class="block text-gray-700 font-medium mb-2">📍 الحالة:</label>
+        <div class="relative inline-block w-full">
+          {{ form.status }}
+        </div>
+      </div>
     </div>
-  </div>
-
-</div>
-
-<style>
-  select[name="status"] {
-    width: 100%;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    padding: 0.45rem 2rem 0.45rem 0.75rem;
-    font-size: 0.875rem;
-    background-color: #fff;
-    color: #374151;
-    transition: all 0.2s ease;
-    appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, #2563eb 50%),
-                      linear-gradient(135deg, #2563eb 50%, transparent 50%);
-    background-position: calc(100% - 16px) center, calc(100% - 11px) center;
-    background-size: 5px 5px, 5px 5px;
-    background-repeat: no-repeat;
-    cursor: pointer;
-  }
-
-  select[name="status"]:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
-  }
-
-  textarea[name="reason"] {
-    resize: none;
-  }
-</style>
-
 
     <!-- 🔹 الأزرار -->
     <div class="flex justify-end gap-3 pt-4">
@@ -111,136 +153,105 @@
   </form>
 </div>
 
-<!-- ⚙️ سكربت Alpine.js -->
+<!-- ⚙️ سكربتات Alpine.js -->
 <script>
 function appointmentForm() {
   return {
-    mode: 'month',
     dates: [],
     selectedDate: '',
     selectedTime: '',
-    selectedPatient: '',
     timeSlots: [],
     bookedByDate: JSON.parse('{{ booked_slots_json|escapejs }}'),
-    __initialized: false,
-
     init() {
-      if (this.__initialized) return;
-      this.__initialized = true;
-
-      this.generateDates('month');
-      if (this.dates.length > 0) this.selectedDate = this.dates[0];
+      this.generateDates();
       this.generateTimeSlots();
-
-      this.$watch('selectedDate', () => {
-        this.selectedTime = '';
-        this.generateTimeSlots();
-      });
+      this.$watch('selectedDate', () => this.generateTimeSlots());
     },
-
-    handlePatientChange(e) {
-      if (e.target.value === 'new') {
-        window.open("{% url 'patients:create' %}", "_blank");
-        e.target.value = '';
-      }
-    },
-
-    switchMode(mode) {
-      if (this.mode === mode) return;
-      this.mode = mode;
-      this.generateDates(mode);
-      this.selectedTime = '';
-      this.selectedDate = this.dates.length ? this.dates[0] : '';
-      this.generateTimeSlots();
-    },
-
-    generateDates(mode) {
-      this.dates = [];
+    generateDates() {
       const now = new Date();
       const year = now.getFullYear();
-
-      if (mode === 'month') {
-        const month = now.getMonth();
-        const today = now.getDate();
-        const lastDay = new Date(year, month + 1, 0).getDate();
-        for (let i = today; i <= lastDay; i++) {
-          const d = new Date(year, month, i);
-          this.dates.push(d.toISOString().split('T')[0]);
-        }
-      } else if (mode === 'next') {
-        const nextMonth = now.getMonth() + 1;
-        const lastDayNext = new Date(year, nextMonth + 1, 0).getDate();
-        for (let i = 1; i <= lastDayNext; i++) {
-          const d = new Date(year, nextMonth, i);
-          this.dates.push(d.toISOString().split('T')[0]);
-        }
+      const month = now.getMonth();
+      const today = now.getDate();
+      const lastDay = new Date(year, month + 1, 0).getDate();
+      this.dates = [];
+      for (let i = today; i <= lastDay; i++) {
+        const d = new Date(year, month, i);
+        this.dates.push(d.toISOString().split('T')[0]);
       }
+      this.selectedDate = this.dates[0];
     },
-
     generateTimeSlots() {
       this.timeSlots = [];
-      if (!this.selectedDate) return;
-
       const now = new Date();
       const selected = new Date(this.selectedDate + 'T00:00:00');
       const sameDay = selected.toDateString() === now.toDateString();
       const bookedSet = new Set(this.bookedByDate[this.selectedDate] || []);
-
-      for (let hour = 9; hour <= 19; hour++) {
+      for (let hour = 9; hour <= 18; hour++) {
         for (let min = 0; min < 60; min += 30) {
           const hh = String(hour).padStart(2, '0');
           const mm = min === 0 ? '00' : '30';
           const value = `${hh}:${mm}`;
           let available = true;
-
           if (sameDay) {
             const slotDate = new Date(this.selectedDate + `T${hh}:${mm}:00`);
             if (slotDate <= now) available = false;
           }
           if (bookedSet.has(value)) available = false;
-
           this.timeSlots.push({ label: value, value, available });
         }
       }
+    }
+  };
+}
+
+function patientSearch() {
+  return {
+    query: '',
+    results: [],
+    selected: null,
+    showAddModal: false,
+    newPatient: { name: '', phone: '', age: '', gender: '', diagnosis: '' },
+
+    searchPatients() {
+      if (this.query.length < 2) {
+        this.results = [];
+        return;
+      }
+      fetch(`/patients/search/?q=${this.query}`)
+        .then(res => res.json())
+        .then(data => this.results = data);
     },
 
-    pickDate(isoDate) {
-      if (this.selectedDate === isoDate) return;
-      this.selectedDate = isoDate;
+    selectPatient(p) {
+      this.selected = p;
+      this.query = p.name;
+      this.results = [];
+    },
+
+    addPatient() {
+      fetch('/patients/create_api/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify(this.newPatient)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.id) {
+          this.selected = data;
+          this.query = data.name;
+          this.showAddModal = false;
+          this.newPatient = { name: '', phone: '', age: '', gender: '', diagnosis: '' };
+          alert('✅ تم إضافة المريض بنجاح!');
+        } else {
+          alert('❌ حدث خطأ أثناء الإضافة.');
+        }
+      });
     }
   };
 }
 </script>
-
-<!-- 🎨 تحسين مظهر الحقول (بدون أي مكتبات) -->
-<style>
-  select, textarea, input[type="text"] {
-    width: 100%;
-    border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.9rem;
-    background-color: #fff;
-    color: #374151;
-    transition: all 0.2s ease;
-  }
-
-  select:focus,
-  textarea:focus,
-  input[type="text"]:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25);
-  }
-
-  select {
-    appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, #2563eb 50%), 
-                      linear-gradient(135deg, #2563eb 50%, transparent 50%);
-    background-position: calc(100% - 15px) calc(1em + 2px), calc(100% - 10px) calc(1em + 2px);
-    background-size: 5px 5px, 5px 5px;
-    background-repeat: no-repeat;
-  }
-</style>
 
 {% endblock %}
