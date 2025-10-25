@@ -1,145 +1,126 @@
 .
+├── add_dummy_appointments.py
+├── add_dummy_patients.py
 ├── appointments
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── forms.py
-│   ├── migrations
-│   │   ├── 0001_initial.py
-│   │   └── __init__.py
-│   ├── models.py
-│   ├── templates
-│   │   └── appointments
-│   │       ├── _date_picker.html
-│   │       ├── _patients_dropdown.html
-│   │       ├── create.html
-│   │       ├── delete.html
-│   │       ├── list.html
-│   │       └── update.html
-│   ├── tests.py
-│   ├── urls.py
-│   └── views.py
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── templates
+│   │   └── appointments
+│   │       ├── _date_picker.html
+│   │       ├── _patients_dropdown.html
+│   │       ├── create.html
+│   │       ├── delete.html
+│   │       ├── list.html
+│   │       └── update.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
 ├── clinic
-│   ├── __init__.py
-│   ├── asgi.py
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
 ├── core
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── migrations
-│   │   ├── 0001_initial.py
-│   │   ├── 0002_delete_activitylog.py
-│   │   └── __init__.py
-│   ├── models.py
-│   ├── signals.py
-│   └── tests.py
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── signals.py
+│   └── tests.py
 ├── dashboard
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── migrations
-│   │   └── __init__.py
-│   ├── models.py
-│   ├── templates
-│   │   └── dashboard
-│   │       └── home.html
-│   ├── tests.py
-│   ├── urls.py
-│   └── views.py
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py
+│   ├── templates
+│   │   └── dashboard
+│   │       └── home.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
 ├── invoices
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── migrations
-│   │   ├── 0001_initial.py
-│   │   └── __init__.py
-│   ├── models.py
-│   ├── templates
-│   │   └── invoices
-│   │       ├── create.html
-│   │       ├── list.html
-│   │       ├── summary.html
-│   │       └── update.html
-│   ├── tests.py
-│   ├── urls.py
-│   └── views.py
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── templates
+│   │   └── invoices
+│   │       ├── create.html
+│   │       ├── expense_create.html
+│   │       ├── expense_list.html
+│   │       ├── list.html
+│   │       ├── print.html
+│   │       └── update.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
 ├── licensing
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── forms.py
-│   ├── middleware.py
-│   ├── migrations
-│   │   ├── 0001_initial.py
-│   │   └── __init__.py
-│   ├── models.py
-│   ├── tests.py
-│   ├── urls.py
-│   └── views.py
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── middleware.py
+│   ├── models.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
 ├── manage.py
 ├── package.json
 ├── patients
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── forms.py
-│   ├── migrations
-│   │   ├── 0001_initial.py
-│   │   ├── 0002_alter_patient_options_remove_patient_address_and_more.py
-│   │   ├── 0003_remove_patient_speciality_remove_patient_status_and_more.py
-│   │   ├── 0004_patient_phone_alter_patient_diagnosis.py
-│   │   └── __init__.py
-│   ├── models.py
-│   ├── templates
-│   │   └── patients
-│   │       ├── create.html
-│   │       ├── delete_confirm.html
-│   │       ├── detail.html
-│   │       ├── detail_card.html
-│   │       ├── list.html
-│   │       ├── update.html
-│   │       └── view.html
-│   ├── tests.py
-│   ├── urls.py
-│   └── views.py
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── models.py
+│   ├── templates
+│   │   └── patients
+│   │       ├── create.html
+│   │       ├── delete_confirm.html
+│   │       ├── list.html
+│   │       ├── update.html
+│   │       └── view.html
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
 ├── static
-│   └── css
-│       └── app.css
+│   └── css
+│       └── app.css
 ├── structure.txt
 ├── tailwind.config.js
 ├── templates
-│   ├── assets.css
-│   ├── base.html
-│   ├── includes
-│   │   ├── license_badge.html
-│   │   ├── navbar.html
-│   │   └── sidebar.html
-│   ├── licensing
-│   │   ├── activate.html
-│   │   └── status.html
-│   └── registration
-│       └── login.html
+│   ├── assets.css
+│   ├── base.html
+│   ├── includes
+│   │   ├── license_badge.html
+│   │   ├── navbar.html
+│   │   └── sidebar.html
+│   ├── licensing
+│   │   ├── activate.html
+│   │   └── status.html
+│   └── registration
+│       └── login.html
 └── users
     ├── __init__.py
     ├── admin.py
     ├── apps.py
     ├── forms.py
-    ├── migrations
-    │   ├── 0001_initial.py
-    │   └── __init__.py
     ├── models.py
     ├── templates
-    │   └── users
-    │       ├── change_password.html
-    │       ├── delete.html
-    │       ├── form.html
-    │       └── list.html
+    │   └── users
+    │       ├── change_password.html
+    │       ├── delete.html
+    │       ├── form.html
+    │       └── list.html
     ├── templatetags
-    │   ├── __init__.py
-    │   └── form_filters.py
+    │   ├── __init__.py
+    │   └── form_filters.py
     ├── tests.py
     ├── urls.py
     └── views.py
+
+26 directories, 98 files

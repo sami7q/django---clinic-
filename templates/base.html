@@ -1,13 +1,14 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
+{% load static %}
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>IQ Clinic | نظام إدارة العيادات</title>
+    <title>{% block title %}IQ Clinic | نظام إدارة العيادات{% endblock %}</title>
 
     <!-- الخطوط و الأنماط -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/app.css">
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -19,16 +20,26 @@
         color: #1f2937;
         background-color: #f9fafb;
       }
+
+      /* تحسين المظهر العام */
+      a {
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+      a:hover {
+        opacity: 0.85;
+      }
     </style>
   </head>
 
   <body class="min-h-screen">
-    
+
+    {% if user.is_authenticated %}
     <!-- 🔹 الشريط العلوي -->
     <header class="fixed top-0 left-0 right-0 md:right-64 h-16 z-50 bg-gradient-to-l from-blue-600 to-blue-500 text-white shadow-md">
       <div class="h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
         <div class="flex items-center gap-2 font-semibold truncate">
-          <span>👋 مرحبًا، sami</span>
+          <span>👋 مرحبًا، {{ user.username }}</span>
         </div>
 
         <div class="flex items-center gap-4">
@@ -64,32 +75,50 @@
         <div class="text-xl font-extrabold text-gray-800">Clinic</div>
       </div>
 
-      <nav class="flex-1 px-4 py-6 space-y-1 text-[15px]">
-        <a href="/dashboard/" class="block rounded-lg px-3 py-2 hover:bg-blue-50"><i data-lucide="layout-dashboard" class="inline w-5 h-5 mr-2"></i> لوحة التحكم</a>
-        <a href="/patients/" class="block rounded-lg px-3 py-2 hover:bg-blue-50"><i data-lucide="users" class="inline w-5 h-5 mr-2"></i> المرضى</a>
-        <a href="/appointments/" class="block rounded-lg px-3 py-2 hover:bg-blue-50"><i data-lucide="calendar" class="inline w-5 h-5 mr-2"></i> المواعيد</a>
-        <a href="/invoices/" class="block rounded-lg px-3 py-2 hover:bg-blue-50"><i data-lucide="file-text" class="inline w-5 h-5 mr-2"></i> الفواتير</a>
-        <a href="/users/" class="block rounded-lg px-3 py-2 hover:bg-blue-50"><i data-lucide="shield" class="inline w-5 h-5 mr-2"></i> المستخدمون</a>
+      <nav class="flex-1 px-4 py-6 space-y-1 text-[15px] font-medium">
+        <a href="/dashboard/" class="block rounded-lg px-3 py-2 hover:bg-blue-50 text-gray-700 flex items-center gap-2">
+          <i data-lucide="layout-dashboard" class="w-5 h-5 text-blue-600"></i>
+          لوحة التحكم
+        </a>
+        <a href="/patients/" class="block rounded-lg px-3 py-2 hover:bg-blue-50 text-gray-700 flex items-center gap-2">
+          <i data-lucide="users" class="w-5 h-5 text-blue-600"></i>
+          المرضى
+        </a>
+        <a href="/appointments/" class="block rounded-lg px-3 py-2 hover:bg-blue-50 text-gray-700 flex items-center gap-2">
+          <i data-lucide="calendar" class="w-5 h-5 text-blue-600"></i>
+          المواعيد
+        </a>
+        <a href="/invoices/" class="block rounded-lg px-3 py-2 hover:bg-blue-50 text-gray-700 flex items-center gap-2">
+          <i data-lucide="file-text" class="w-5 h-5 text-blue-600"></i>
+          الفواتير
+        </a>
+        <a href="/users/" class="block rounded-lg px-3 py-2 hover:bg-blue-50 text-gray-700 flex items-center gap-2">
+          <i data-lucide="shield" class="w-5 h-5 text-blue-600"></i>
+          المستخدمون
+        </a>
       </nav>
 
       <div class="text-center border-t border-gray-200 py-4 text-xs text-gray-500">© IQ Clinic 2025</div>
     </aside>
+    {% endif %}
 
     <!-- 🔸 محتوى الصفحة -->
-    <main class="md:mr-64 pt-20 px-4 sm:px-6 lg:px-8 pb-10 transition-all">
-      {% block content %}
-      {% endblock %}
+    <main class="{% if user.is_authenticated %}md:mr-64 pt-20{% else %}pt-8{% endif %} px-4 sm:px-6 lg:px-8 pb-10 transition-all">
+      {% block content %}{% endblock %}
     </main>
 
     <script>
       lucide.createIcons();
+
       const notifBtn = document.getElementById("notifBtn");
       const notifMenu = document.getElementById("notifMenu");
       const notifBadge = document.getElementById("notifBadge");
+
       notifBtn?.addEventListener("click", () => {
         notifMenu?.classList.toggle("hidden");
         notifBadge?.classList.add("hidden");
       });
+
       document.addEventListener("click", (e) => {
         if (!notifBtn?.contains(e.target) && !notifMenu?.contains(e.target)) {
           notifMenu?.classList.add("hidden");

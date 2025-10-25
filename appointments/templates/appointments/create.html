@@ -1,37 +1,33 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="max-w-xl mx-auto mt-10 bg-white rounded-2xl shadow-lg border border-gray-100 p-6 space-y-6 text-[13px]">
+<div class="max-w-2xl mx-auto mt-10 bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-6 text-sm">
 
   <!-- 🩺 العنوان -->
-  <header class="flex justify-between items-center mb-4">
-    <h1 class="text-lg font-bold text-blue-700">📅 إضافة موعد جديد</h1>
-    <a href="{% url 'appointments:list' %}" 
-       class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-xs">
+  <header class="flex justify-between items-center mb-6">
+    <h1 class="text-xl font-bold text-blue-700">إضافة موعد جديد</h1>
+    <a href="{% url 'appointments:list' %}"
+       class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-xs font-medium">
       ← العودة
     </a>
   </header>
 
-  <form method="POST" class="space-y-6">
+  <!-- 🔹 النموذج -->
+  <form method="POST" class="space-y-6 relative">
     {% csrf_token %}
 
     <!-- 👤 اختيار المريض -->
     <div x-data="patientSearch()">
-      <label class="block text-gray-700 font-medium mb-1">👤 اختيار المريض</label>
+      <label class="block text-gray-700 font-semibold mb-1">المريض</label>
       <div class="flex gap-2">
-        <input type="text"
-               x-model="query"
-               @input.debounce.400ms="searchPatients"
-               placeholder="ابحث بالاسم أو رقم الهاتف..."
-               class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100 outline-none">
-        <button type="button"
-                @click="showAddModal = true"
-                class="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">
-          ➕
-        </button>
+        <input type="text" x-model="query" @input.debounce.400ms="searchPatients"
+               placeholder="ابحث بالاسم أو الهاتف..."
+               class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100 outline-none">
+        <button type="button" @click="showAddModal = true"
+                class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm">+</button>
       </div>
 
-      <!-- 🔽 نتائج البحث -->
+      <!-- نتائج البحث -->
       <ul x-show="results.length > 0"
           class="absolute z-10 bg-white border border-gray-200 rounded-lg shadow mt-1 w-full max-h-48 overflow-y-auto text-sm">
         <template x-for="p in results" :key="p.id">
@@ -44,203 +40,106 @@
       </ul>
 
       <input type="hidden" name="patient" :value="selected ? selected.id : ''">
-
-      <!-- 🧩 نافذة إضافة مريض جديد -->
-      <div x-show="showAddModal"
-           class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 border border-gray-200 space-y-4 relative">
-          <button @click="showAddModal = false"
-                  class="absolute top-2 right-3 text-gray-400 hover:text-gray-600 text-lg">✕</button>
-          <h2 class="text-base font-semibold text-blue-700 mb-3">➕ إضافة مريض جديد</h2>
-
-          <div class="space-y-2">
-            <input type="text" placeholder="الاسم الكامل" x-model="newPatient.name"
-                   class="w-full border rounded px-3 py-1.5 text-sm focus:border-blue-500">
-            <input type="text" placeholder="رقم الهاتف" x-model="newPatient.phone"
-                   class="w-full border rounded px-3 py-1.5 text-sm focus:border-blue-500">
-            <input type="number" placeholder="العمر" x-model="newPatient.age"
-                   class="w-full border rounded px-3 py-1.5 text-sm focus:border-blue-500">
-            <select x-model="newPatient.gender"
-                    class="w-full border rounded px-3 py-1.5 text-sm focus:border-blue-500">
-              <option value="">الجنس</option>
-              <option value="ذكر">ذكر</option>
-              <option value="أنثى">أنثى</option>
-            </select>
-            <textarea placeholder="الملاحظات"
-                      x-model="newPatient.diagnosis"
-                      class="w-full border rounded px-3 py-1.5 text-sm focus:border-blue-500"></textarea>
-          </div>
-
-          <div class="flex justify-end gap-2 pt-2">
-            <button type="button"
-                    @click="showAddModal = false"
-                    class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">
-              إلغاء
-            </button>
-            <button type="button"
-                    @click="addPatient"
-                    class="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm">
-              💾 حفظ
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- 📅 التاريخ والوقت -->
     <div x-data="appointmentForm()" x-init="init()">
-      <label class="block text-gray-700 font-medium mb-1">📅 تاريخ الموعد:</label>
+      <label class="block text-gray-700 font-semibold mb-1">تاريخ الموعد</label>
 
       <div class="flex gap-2 mb-2">
-        <button type="button"
-                class="px-3 py-1 rounded-lg border text-xs font-medium transition"
-                :class="mode === 'month' ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 text-gray-700'"
-                @click="switchMode('month')">
-          هذا الشهر
-        </button>
-        <button type="button"
-                class="px-3 py-1 rounded-lg border text-xs font-medium transition"
-                :class="mode === 'next' ? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 text-gray-700'"
-                @click="switchMode('next')">
-          الشهر القادم
-        </button>
+        <button type="button" @click="switchMode('month')"
+                :class="mode === 'month' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
+                class="px-3 py-1 rounded-lg text-xs font-medium transition">هذا الشهر</button>
+        <button type="button" @click="switchMode('next')"
+                :class="mode === 'next' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'"
+                class="px-3 py-1 rounded-lg text-xs font-medium transition">الشهر القادم</button>
       </div>
 
-      <div class="grid grid-cols-3 gap-1.5">
+      <div class="grid grid-cols-4 gap-1.5">
         <template x-for="d in dates" :key="d">
-          <button type="button"
+          <button type="button" @click="pickDate(d)"
+                  :class="selectedDate === d ? 'bg-blue-50 text-blue-700 border-blue-600 font-medium' : 'border-gray-300 text-gray-700'"
                   class="p-1.5 border rounded-lg text-xs hover:bg-blue-50 transition"
-                  :class="selectedDate === d 
-                           ? 'border-blue-600 text-blue-700 font-semibold bg-blue-50' 
-                           : 'border-gray-300 text-gray-700'"
-                  @click="pickDate(d)">
-            <span x-text="new Date(d).toLocaleDateString('ar-EG', { weekday: 'short', day: 'numeric', month: 'short' })"></span>
-          </button>
+                  x-text="new Date(d).toLocaleDateString('ar-EG', { weekday: 'short', day: 'numeric' })"></button>
         </template>
       </div>
 
       <input type="hidden" name="date" :value="selectedDate">
 
-      <!-- 🕒 الوقت -->
-      <div class="mt-3">
-        <label class="block text-gray-700 font-medium mb-1">🕒 اختيار الوقت:</label>
-        <div class="grid grid-cols-5 gap-1.5">
-          <template x-for="t in timeSlots" :key="t.value">
-            <button type="button"
-                    class="p-1 border rounded text-xs hover:bg-blue-50 transition"
-                    :disabled="!t.available"
-                    :class="selectedTime === t.value
-                             ? 'border-blue-600 text-blue-700 font-medium bg-blue-50'
-                             : (t.available ? 'border-gray-300 text-gray-700' : 'border-gray-200 text-gray-400 line-through')"
-                    @click="selectedTime = t.value"
-                    x-text="t.label"></button>
-          </template>
-        </div>
-        <input type="hidden" name="time" :value="selectedTime">
+      <label class="block text-gray-700 font-semibold mt-4 mb-1">الوقت</label>
+      <div class="grid grid-cols-5 gap-1">
+        <template x-for="t in timeSlots" :key="t.value">
+          <button type="button" @click="selectedTime = t.value"
+                  :disabled="!t.available"
+                  :class="selectedTime === t.value
+                           ? 'bg-blue-50 text-blue-700 border-blue-600 font-medium'
+                           : (t.available ? 'border-gray-300 text-gray-700' : 'border-gray-200 text-gray-400 line-through')"
+                  class="p-1 border rounded text-xs hover:bg-blue-50 transition"
+                  x-text="t.label"></button>
+        </template>
       </div>
+
+      <input type="hidden" name="time" :value="selectedTime">
     </div>
 
-    <!-- 📝 السبب والحالة -->
-    <div class="space-y-3">
-      <div>
-        <label class="block text-gray-700 font-medium mb-1">📝 سبب الزيارة:</label>
-        <textarea name="reason"
-                  class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm resize-none
-                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                  rows="2">{{ form.reason.value|default_if_none:'' }}</textarea>
-      </div>
-
-      <div>
-        <label class="block text-gray-700 font-medium mb-1">📍 الحالة:</label>
-        <select name="status"
-                class="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:border-blue-500 focus:ring-blue-100">
-          <option value="لم يحن الموعد">📅 لم يحن الموعد</option>
-          <option value="تمت الزيارة">✅ تمت الزيارة</option>
-          <option value="ألغيت">❌ أُلغيت</option>
-        </select>
-      </div>
+    <!-- 📝 التفاصيل -->
+    <div>
+      <label class="block text-gray-700 font-semibold mb-1">السبب</label>
+      <textarea name="reason" rows="2"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 resize-none">{{ form.reason.value|default_if_none:'' }}</textarea>
     </div>
 
-    <!-- 🔘 الأزرار -->
-    <div class="flex justify-end gap-2 pt-3">
-      <a href="{% url 'appointments:list' %}" 
-         class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
-         إلغاء
-      </a>
-      <button type="submit" 
-              class="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium shadow-sm">
-        💾 حفظ
+    <div>
+      <label class="block text-gray-700 font-semibold mb-1">الحالة</label>
+      <select name="status" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+        <option value="لم يحن الموعد">لم يحن الموعد</option>
+        <option value="تمت الزيارة">تمت الزيارة</option>
+        <option value="ألغيت">ألغيت</option>
+      </select>
+    </div>
+
+    <!-- الأزرار -->
+    <div class="flex justify-end gap-3 pt-4">
+      <a href="{% url 'appointments:list' %}"
+         class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium">إلغاء</a>
+      <button type="submit"
+              class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-semibold shadow-sm">
+        حفظ الموعد
       </button>
     </div>
   </form>
 </div>
 
-<!-- ⚙️ سكربت -->
 <script>
 function appointmentForm() {
   return {
     mode: 'month',
-    dates: [],
-    selectedDate: '',
-    selectedTime: '',
-    timeSlots: [],
-    bookedByDate: JSON.parse('{{ booked_slots_json|escapejs }}'),
+    dates: [], selectedDate: '', selectedTime: '',
+    timeSlots: [], bookedByDate: JSON.parse('{{ booked_slots_json|escapejs }}'),
 
-    init() {
-      this.generateDates();
-      this.generateTimeSlots();
-      this.$watch('selectedDate', () => this.generateTimeSlots());
-    },
-
-    switchMode(mode) {
-      this.mode = mode;
-      this.generateDates();
-    },
-
+    init() { this.generateDates(); this.generateTimeSlots(); this.$watch('selectedDate', () => this.generateTimeSlots()); },
+    switchMode(mode) { this.mode = mode; this.generateDates(); },
     generateDates() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const currentMonth = now.getMonth();
-      const nextMonth = currentMonth + 1;
-      let start, end;
-      if (this.mode === 'month') {
-        start = new Date(year, currentMonth, now.getDate());
-        end = new Date(year, currentMonth + 1, 0);
-      } else {
-        start = new Date(year, nextMonth, 1);
-        end = new Date(year, nextMonth + 1, 0);
-      }
-      this.dates = [];
-      const today = new Date(now);
-      today.setHours(0, 0, 0, 0);
+      const now = new Date(); const year = now.getFullYear(); const currentMonth = now.getMonth();
+      const nextMonth = currentMonth + 1; let start, end;
+      if (this.mode === 'month') { start = new Date(year, currentMonth, now.getDate()); end = new Date(year, currentMonth + 1, 0); }
+      else { start = new Date(year, nextMonth, 1); end = new Date(year, nextMonth + 1, 0); }
+      this.dates = []; const today = new Date(now); today.setHours(0, 0, 0, 0);
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        const check = new Date(d);
-        check.setHours(0, 0, 0, 0);
-        if (check < today) continue;
-        const localDate = d.toLocaleDateString('en-CA');
-        this.dates.push(localDate);
+        const check = new Date(d); check.setHours(0, 0, 0, 0); if (check < today) continue;
+        const localDate = d.toLocaleDateString('en-CA'); this.dates.push(localDate);
       }
       if (this.dates.length > 0) this.selectedDate = this.dates[0];
     },
-
     pickDate(d) { this.selectedDate = d; },
-
     generateTimeSlots() {
-      this.timeSlots = [];
-      const now = new Date();
-      const selected = new Date(this.selectedDate + 'T00:00:00');
+      this.timeSlots = []; const now = new Date(); const selected = new Date(this.selectedDate + 'T00:00:00');
       const sameDay = selected.toDateString() === now.toDateString();
       const bookedSet = new Set(this.bookedByDate[this.selectedDate] || []);
       for (let hour = 9; hour <= 18; hour++) {
         for (let min = 0; min < 60; min += 30) {
-          const hh = String(hour).padStart(2, '0');
-          const mm = min === 0 ? '00' : '30';
-          const value = `${hh}:${mm}`;
-          let available = true;
-          if (sameDay) {
-            const slotDate = new Date(this.selectedDate + `T${hh}:${mm}:00`);
-            if (slotDate <= now) available = false;
-          }
+          const hh = String(hour).padStart(2, '0'); const mm = min === 0 ? '00' : '30'; const value = `${hh}:${mm}`;
+          let available = true; if (sameDay) { const slotDate = new Date(this.selectedDate + `T${hh}:${mm}:00`); if (slotDate <= now) available = false; }
           if (bookedSet.has(value)) available = false;
           this.timeSlots.push({ label: value, value, available });
         }
@@ -251,31 +150,13 @@ function appointmentForm() {
 
 function patientSearch() {
   return {
-    query: '', results: [], selected: null, showAddModal: false,
-    newPatient: { name: '', phone: '', age: '', gender: '', diagnosis: '' },
+    query: '', results: [], selected: null,
     searchPatients() {
       if (this.query.length < 2) { this.results = []; return; }
       fetch(`/patients/search/?q=${this.query}`)
         .then(res => res.json()).then(data => this.results = data);
     },
     selectPatient(p) { this.selected = p; this.query = p.name; this.results = []; },
-    addPatient() {
-      fetch('/patients/create_api/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': '{{ csrf_token }}' },
-        body: JSON.stringify(this.newPatient)
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.id) {
-          this.selected = data;
-          this.query = data.name;
-          this.showAddModal = false;
-          this.newPatient = { name: '', phone: '', age: '', gender: '', diagnosis: '' };
-          alert('✅ تم إضافة المريض بنجاح!');
-        } else alert('❌ حدث خطأ أثناء الإضافة.');
-      });
-    }
   };
 }
 </script>
