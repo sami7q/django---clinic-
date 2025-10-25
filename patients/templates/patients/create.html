@@ -1,75 +1,73 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
-<div class="flex justify-center mt-12">
-  <div class="bg-white shadow-2xl border border-gray-200 rounded-2xl p-8 w-full max-w-lg">
-    
-    <!-- 🩺 العنوان -->
-    <h2 class="text-2xl font-bold text-center text-blue-700 mb-8 flex items-center justify-center gap-2">
-      <span class="text-3xl">➕</span> 
-      <span>إضافة مريض جديد</span>
-    </h2>
 
-    <!-- 🧾 النموذج -->
+<div class="flex justify-center mt-12 px-4">
+  <div class="bg-white border border-gray-200 rounded-2xl shadow-lg p-8 w-full max-w-lg">
+
+    <!-- العنوان -->
+    <div class="text-center mb-8">
+      <h2 class="text-xl font-bold text-blue-700">إضافة مريض جديد</h2>
+      <p class="text-gray-500 text-sm mt-1">يرجى تعبئة البيانات التالية بدقة</p>
+    </div>
+
+    <!-- النموذج -->
     <form method="post" class="space-y-5">
       {% csrf_token %}
 
       <!-- الاسم -->
       <div>
-        <label class="block text-gray-700 font-medium mb-2">الاسم الكامل</label>
+        <label class="block text-gray-700 font-medium mb-1">الاسم الكامل</label>
         {{ form.name }}
       </div>
 
       <!-- العمر + الجنس -->
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-gray-700 font-medium mb-2">العمر</label>
+          <label class="block text-gray-700 font-medium mb-1">العمر</label>
           {{ form.age }}
         </div>
         <div>
-          <label class="block text-gray-700 font-medium mb-2">الجنس</label>
-          <div class="relative">
-            {{ form.gender }}
-          </div>
+          <label class="block text-gray-700 font-medium mb-1">الجنس</label>
+          {{ form.gender }}
         </div>
       </div>
 
       <!-- الهاتف -->
       <div>
-        <label class="block text-gray-700 font-medium mb-2">رقم الهاتف</label>
+        <label class="block text-gray-700 font-medium mb-1">رقم الهاتف</label>
         {{ form.phone }}
       </div>
 
       <!-- التشخيص -->
       <div>
-        <label class="block text-gray-700 font-medium mb-2">التشخيص</label>
+        <label class="block text-gray-700 font-medium mb-1">التشخيص</label>
         {{ form.diagnosis }}
       </div>
 
       <!-- الملاحظات -->
       <div>
-        <label class="block text-gray-700 font-medium mb-2">ملاحظات</label>
+        <label class="block text-gray-700 font-medium mb-1">ملاحظات</label>
         {{ form.notes }}
       </div>
 
-      <!-- 🔘 الأزرار -->
-      <div class="flex justify-between items-center pt-6">
+      <!-- الأزرار -->
+      <div class="flex justify-between items-center pt-6 border-t border-gray-100 mt-6">
         <a href="{% url 'patients:list' %}"
-           class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-5 py-2 rounded-lg font-medium transition">
-          ⬅ العودة للقائمة
+           class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm font-medium transition">
+          ← العودة للقائمة
         </a>
 
         <button type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition">
-          💾 حفظ المريض
+                class="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-semibold transition">
+          حفظ المريض
         </button>
       </div>
     </form>
   </div>
 </div>
 
-<!-- 💅 تنسيقات الحقول -->
+<!-- تحسين شكل الحقول -->
 <style>
   input[type="text"],
   input[type="number"],
@@ -79,7 +77,7 @@
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
     padding: 0.5rem 0.75rem;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     background-color: #fff;
     color: #374151;
     transition: all 0.2s ease;
@@ -95,9 +93,12 @@
 
   select {
     appearance: none;
-    background-image: linear-gradient(45deg, transparent 50%, #2563eb 50%), 
-                      linear-gradient(135deg, #2563eb 50%, transparent 50%);
-    background-position: calc(100% - 15px) calc(1em + 2px), calc(100% - 10px) calc(1em + 2px);
+    background-image:
+      linear-gradient(45deg, transparent 50%, #2563eb 50%),
+      linear-gradient(135deg, #2563eb 50%, transparent 50%);
+    background-position:
+      calc(100% - 15px) calc(1em + 2px),
+      calc(100% - 10px) calc(1em + 2px);
     background-size: 5px 5px, 5px 5px;
     background-repeat: no-repeat;
     cursor: pointer;
@@ -107,4 +108,5 @@
     resize: none;
   }
 </style>
+
 {% endblock %}

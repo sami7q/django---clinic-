@@ -1,41 +1,35 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="max-w-2xl mx-auto mt-10 bg-white rounded-2xl shadow-xl border border-gray-100 p-8 space-y-8">
+<div class="max-w-xl mx-auto mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
 
-  <!-- 🧭 العنوان -->
-  <header class="flex justify-between items-center border-b pb-3">
+  <!-- 🔹 العنوان -->
+  <header class="border-b pb-2">
     {% if edit_mode %}
-      <h1 class="text-2xl font-bold text-blue-700 flex items-center gap-2">
-        ✏️ تعديل المستخدم
-      </h1>
-      <p class="text-gray-500 text-sm">يمكنك تعديل بيانات المستخدم أو صلاحياته.</p>
+      <h1 class="text-xl font-bold text-blue-700 tracking-tight">تعديل المستخدم</h1>
+      <p class="text-gray-500 text-xs mt-1">يمكنك تعديل بيانات المستخدم أو صلاحياته.</p>
     {% else %}
-      <h1 class="text-2xl font-bold text-blue-700 flex items-center gap-2">
-        ➕ إضافة مستخدم جديد
-      </h1>
-      <p class="text-gray-500 text-sm">املأ الحقول أدناه لإنشاء حساب جديد.</p>
+      <h1 class="text-xl font-bold text-blue-700 tracking-tight">إضافة مستخدم جديد</h1>
+      <p class="text-gray-500 text-xs mt-1">املأ الحقول أدناه لإنشاء حساب جديد.</p>
     {% endif %}
   </header>
 
   <!-- 🧾 النموذج -->
-  <form method="POST" class="space-y-8 text-sm">
+  <form method="POST" class="space-y-6 text-sm">
     {% csrf_token %}
     {{ form.non_field_errors }}
 
     <!-- 👤 البيانات الأساسية -->
     <section class="space-y-3">
-      <h2 class="text-base font-semibold text-gray-800 border-b border-gray-100 pb-1 flex items-center gap-2">
-        🧾 البيانات الأساسية
-      </h2>
+      <h2 class="text-sm font-semibold text-gray-800 border-b border-gray-100 pb-1">البيانات الأساسية</h2>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
-          <label class="block text-gray-700 font-medium mb-1">👤 اسم المستخدم</label>
+          <label class="block text-gray-700 font-medium mb-1">اسم المستخدم</label>
           {{ form.username }}
         </div>
         <div>
-          <label class="block text-gray-700 font-medium mb-1">📧 البريد الإلكتروني</label>
+          <label class="block text-gray-700 font-medium mb-1">البريد الإلكتروني</label>
           {{ form.email }}
         </div>
       </div>
@@ -43,45 +37,39 @@
 
     <!-- 🔐 الصلاحيات -->
     <section class="space-y-3">
-      <h2 class="text-base font-semibold text-gray-800 border-b border-gray-100 pb-1 flex items-center gap-2">
-        🔐 الصلاحيات
-      </h2>
+      <h2 class="text-sm font-semibold text-gray-800 border-b border-gray-100 pb-1">الصلاحيات</h2>
 
       <div class="grid grid-cols-2 gap-3">
-        <label class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition cursor-pointer">
-          <span class="text-gray-700 font-medium">🛠️ لوحة الإدارة</span>
+        <label class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-md p-2.5 hover:bg-gray-100 transition">
+          <span class="text-gray-700 font-medium text-sm">صلاحية الإدارة</span>
           {{ form.is_staff }}
         </label>
-        <label class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg p-3 hover:bg-gray-100 transition cursor-pointer">
-          <span class="text-gray-700 font-medium">✅ نشط</span>
+        <label class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-md p-2.5 hover:bg-gray-100 transition">
+          <span class="text-gray-700 font-medium text-sm">نشط</span>
           {{ form.is_active }}
         </label>
       </div>
     </section>
 
     <!-- 🧩 الدور -->
-    <section class="space-y-3">
-      <h2 class="text-base font-semibold text-gray-800 border-b border-gray-100 pb-1 flex items-center gap-2">
-        🧩 الدور الوظيفي
-      </h2>
+    <section class="space-y-2">
+      <h2 class="text-sm font-semibold text-gray-800 border-b border-gray-100 pb-1">الدور الوظيفي</h2>
       {{ form.role }}
 
       <div class="grid grid-cols-2 gap-2 mt-2 text-xs text-gray-500">
-        <div>🧑‍💼 <b>مدير:</b> وصول كامل للنظام</div>
-        <div>🩺 <b>طبيب:</b> إدارة المرضى والمواعيد</div>
-        <div>💬 <b>استقبال:</b> إدارة المواعيد فقط</div>
-        <div>🧾 <b>محاسب:</b> إدارة الفواتير فقط</div>
+        <div><b>مدير:</b> وصول كامل للنظام</div>
+        <div><b>طبيب:</b> إدارة المرضى والمواعيد</div>
+        <div><b>استقبال:</b> إدارة المواعيد فقط</div>
+        <div><b>محاسب:</b> إدارة الفواتير فقط</div>
       </div>
     </section>
 
     <!-- 🔑 كلمة المرور -->
     {% if not edit_mode %}
     <section class="space-y-3">
-      <h2 class="text-base font-semibold text-gray-800 border-b border-gray-100 pb-1 flex items-center gap-2">
-        🔑 كلمة المرور
-      </h2>
+      <h2 class="text-sm font-semibold text-gray-800 border-b border-gray-100 pb-1">كلمة المرور</h2>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
           <label class="block text-gray-700 font-medium mb-1">كلمة المرور</label>
           {{ form.password1 }}
@@ -95,14 +83,14 @@
     {% endif %}
 
     <!-- 🧭 الأزرار -->
-    <footer class="flex justify-end gap-3 border-t pt-4">
+    <footer class="flex justify-end gap-2 border-t pt-3">
       <a href="{% url 'users:list' %}" 
-         class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
+         class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition text-xs font-medium">
         ← إلغاء
       </a>
       <button type="submit" 
-              class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold shadow">
-        💾 {% if edit_mode %}حفظ التعديلات{% else %}إضافة المستخدم{% endif %}
+              class="px-4 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition font-medium text-xs shadow-sm">
+        {% if edit_mode %}حفظ التعديلات{% else %}إضافة المستخدم{% endif %}
       </button>
     </footer>
   </form>
@@ -112,15 +100,15 @@
   input, select {
     width: 100%;
     border: 1px solid #d1d5db;
-    border-radius: 0.5rem;
-    padding: 0.55rem 0.75rem;
-    font-size: 0.9rem;
+    border-radius: 0.4rem;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.85rem;
     transition: all 0.2s ease;
   }
   input:focus, select:focus {
     border-color: #2563eb;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
   }
 </style>
 

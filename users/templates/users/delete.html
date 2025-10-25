@@ -1,44 +1,41 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="max-w-md mx-auto bg-white rounded-2xl shadow-lg border border-gray-100 mt-20 p-8 space-y-6 text-center">
+<div class="max-w-md mx-auto mt-16 bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6 text-center">
 
-  <!-- 🧭 العنوان -->
-  <h1 class="text-2xl font-bold text-red-600 flex justify-center items-center gap-2">
-    🗑️ حذف المستخدم
-  </h1>
+  <!-- 🔹 العنوان -->
+  <header class="border-b pb-2">
+    <h1 class="text-xl font-bold text-red-600 tracking-tight">حذف المستخدم</h1>
+    <p class="text-gray-500 text-xs mt-1">تأكيد حذف المستخدم بشكل نهائي من النظام.</p>
+  </header>
 
-  <p class="text-gray-600 text-sm">
-    هل أنت متأكد أنك تريد حذف المستخدم التالي؟
-  </p>
-
-  <div class="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-xl">
-    <p class="font-medium text-gray-900 text-lg">{{ user.username }}</p>
-    <p class="text-sm text-gray-500">{{ user.email|default:"(بريد غير محدد)" }}</p>
+  <!-- 👤 بيانات المستخدم -->
+  <div class="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+    <p class="font-semibold text-gray-800 text-base">{{ user.username }}</p>
+    <p class="text-xs text-gray-500">{{ user.email|default:"(بريد غير محدد)" }}</p>
   </div>
 
   {% if user == main_user %}
-    <p class="text-red-500 font-semibold mt-4">
-      ⚠️ لا يمكن حذف المستخدم الأساسي للنظام.
-    </p>
+    <p class="text-red-500 font-medium text-sm">لا يمكن حذف المستخدم الأساسي للنظام.</p>
   {% else %}
-    <form method="POST" class="space-y-6">
+    <form method="POST" class="space-y-5">
       {% csrf_token %}
-      <p class="text-gray-500 text-sm">
-        سيتم حذف جميع بيانات هذا المستخدم نهائيًا. هذا الإجراء لا يمكن التراجع عنه.
+      <p class="text-gray-500 text-xs leading-relaxed">
+        سيتم حذف جميع بيانات هذا المستخدم بشكل دائم. هذا الإجراء لا يمكن التراجع عنه.
       </p>
 
-      <div class="flex justify-center gap-3 pt-4">
+      <!-- 🔘 الأزرار -->
+      <footer class="flex justify-center gap-2 pt-3 border-t">
         <a href="{% url 'users:list' %}" 
-           class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm">
+           class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition text-xs font-medium">
           ← إلغاء
         </a>
 
         <button type="submit"
-                class="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 shadow-sm transition text-sm">
-          🗑️ تأكيد الحذف
+                class="px-4 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition text-xs font-medium shadow-sm">
+          تأكيد الحذف
         </button>
-      </div>
+      </footer>
     </form>
   {% endif %}
 </div>

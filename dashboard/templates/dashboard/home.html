@@ -1,130 +1,141 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="p-6 space-y-10">
+<div class="p-8 space-y-10">
 
-  <!-- 🌅 البطاقة الترحيبية -->
-  <div id="greetingCard"
-       class="relative overflow-hidden rounded-3xl border border-gray-200 shadow bg-gradient-to-r from-blue-50 to-blue-100 p-6 flex items-center justify-between transition-all duration-500">
-
-    <div class="space-y-1">
-      <h1 id="greetingText" class="text-2xl font-bold text-gray-800">
-        مرحباً {{ request.user.first_name|default:request.user.username }} 👋
+  <!-- 🔹 التحية -->
+  <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-800">
+        مرحباً {{ request.user.first_name|default:request.user.username }}
       </h1>
-      <p id="dateText" class="text-gray-600"></p>
-      <p class="text-gray-500 text-sm italic mt-1" id="quoteText">
-        نتمنى لك يوماً مثمرًا في إدارة العيادة 👨‍⚕️
-      </p>
+      <p class="text-gray-500 text-sm">نتمنى لك يوماً موفقاً في إدارة العيادة</p>
     </div>
 
-    <div id="iconArea" class="text-6xl text-yellow-400 transition-transform duration-500">☀️</div>
-  </div>
+    <a href="{% url 'appointments:create' %}"
+       class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium shadow-sm">
+      + إضافة موعد جديد
+    </a>
+  </header>
 
-  <!-- 📊 البطاقات -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-    <div class="bg-white border border-gray-200 shadow rounded-2xl p-5 hover:shadow-lg transition">
-      <p class="text-sm text-gray-500 mb-1">👨‍⚕️ المرضى</p>
+  <!-- 📊 الإحصائيات -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+      <p class="text-gray-500 text-sm mb-1">المرضى</p>
       <h2 class="text-3xl font-bold text-blue-700">{{ total_patients }}</h2>
       <p class="text-xs text-gray-500 mt-1">+{{ today_patients }} اليوم</p>
     </div>
 
-    <div class="bg-white border border-gray-200 shadow rounded-2xl p-5 hover:shadow-lg transition">
-      <p class="text-sm text-gray-500 mb-1">📅 المواعيد</p>
+    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+      <p class="text-gray-500 text-sm mb-1">المواعيد</p>
       <h2 class="text-3xl font-bold text-emerald-700">{{ total_appointments }}</h2>
-      <p class="text-xs text-gray-500 mt-1">+{{ recent_appointments }} آخر 24 ساعة</p>
+      <p class="text-xs text-gray-500 mt-1">+{{ recent_appointments }} خلال 24 ساعة</p>
     </div>
 
-    <div class="bg-white border border-gray-200 shadow rounded-2xl p-5 hover:shadow-lg transition">
-      <p class="text-sm text-gray-500 mb-1">💰 الفواتير</p>
-      <h2 class="text-3xl font-bold text-green-700">{{ total_invoices|floatformat:0 }} IQD</h2>
+    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+      <p class="text-gray-500 text-sm mb-1">الفواتير</p>
+      <h2 class="text-3xl font-bold text-green-700">{{ total_invoices|floatformat:0 }} د.ع</h2>
       <p class="text-xs text-gray-500 mt-1">+{{ this_week_invoices|floatformat:0 }} هذا الأسبوع</p>
     </div>
 
-    <div class="bg-white border border-gray-200 shadow rounded-2xl p-5 hover:shadow-lg transition">
-      <p class="text-sm text-gray-500 mb-1">👥 المستخدمون</p>
+    <div class="bg-white border border-gray-200 rounded-xl p-5 shadow-sm hover:shadow-md transition">
+      <p class="text-gray-500 text-sm mb-1">المستخدمون</p>
       <h2 class="text-3xl font-bold text-indigo-700">{{ users_count }}</h2>
-      <p class="text-xs text-gray-500 mt-1">المسجلون في النظام</p>
+      <p class="text-xs text-gray-500 mt-1">نشطون حالياً</p>
     </div>
   </div>
 
-  <!-- 🧾 آخر المرضى -->
-  <div class="bg-white rounded-2xl shadow border border-gray-200 mt-8">
-    <div class="flex justify-between items-center border-b px-6 py-3 bg-gray-50">
-      <h2 class="font-semibold text-gray-700">🧾 آخر المرضى المسجلين</h2>
-      <a href="{% url 'patients:list' %}" class="text-blue-600 text-sm hover:underline">عرض الكل</a>
+  <!-- ⚡ الاختصارات السريعة -->
+  <section>
+    <h2 class="text-lg font-semibold text-gray-800 mb-4">الاختصارات السريعة</h2>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <a href="{% url 'patients:create' %}" class="shortcut-btn bg-blue-50 border-blue-100 text-blue-700">مريض جديد</a>
+      <a href="{% url 'appointments:create' %}" class="shortcut-btn bg-green-50 border-green-100 text-green-700">موعد جديد</a>
+      <a href="{% url 'invoices:create' %}" class="shortcut-btn bg-indigo-50 border-indigo-100 text-indigo-700">فاتورة جديدة</a>
+      <a href="{% url 'invoices:expense_create' %}" class="shortcut-btn bg-orange-50 border-orange-100 text-orange-700">إضافة نفقات</a>
+      <a href="{% url 'patients:list' %}" class="shortcut-btn bg-gray-50 border-gray-100 text-gray-700">قائمة المرضى</a>
+      <a href="{% url 'users:list' %}" class="shortcut-btn bg-cyan-50 border-cyan-100 text-cyan-700">المستخدمون</a>
     </div>
+  </section>
 
-    <table class="min-w-full text-sm text-left">
-      <thead class="bg-gray-100 text-gray-700 uppercase text-xs">
-        <tr>
-          <th class="px-6 py-3">الاسم</th>
-          <th class="px-6 py-3">العمر</th>
-          <th class="px-6 py-3">تاريخ التسجيل</th>
-          <th class="px-6 py-3 text-right">الإجراء</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for p in recent_patients %}
-        <tr class="border-b hover:bg-gray-50 transition">
-          <td class="px-6 py-3">{{ p.name }}</td>
-          <td class="px-6 py-3">{{ p.age }}</td>
-          <td class="px-6 py-3">{{ p.created_at|date:"d F Y" }}</td>
-          <td class="px-6 py-3 text-right">
-            <a href="{% url 'patients:detail' p.id %}" class="text-blue-600 hover:underline">عرض</a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="4" class="text-center py-6 text-gray-500">لا يوجد مرضى بعد</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  <!-- 🧾 آخر الأنشطة -->
+  <section>
+    <h2 class="text-lg font-semibold text-gray-800 mb-3">آخر الأنشطة</h2>
+    <div class="space-y-2">
+      {% for activity in recent_activities %}
+        <div class="flex justify-between items-center bg-white border border-gray-200 rounded-xl px-4 py-2.5 shadow-sm hover:bg-gray-50 transition">
+          <p class="text-sm text-gray-700">{{ activity.text }}</p>
+          <p class="text-xs text-gray-500">{{ activity.date|date:"d/m/Y" }}</p>
+        </div>
+      {% empty %}
+        <p class="text-gray-500 text-center bg-gray-50 py-3 rounded-xl border border-gray-100">
+          لا توجد أنشطة حديثة
+        </p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- ⏰ المواعيد القادمة -->
+  <section>
+    <h2 class="text-lg font-semibold text-gray-800 mb-3">المواعيد القادمة</h2>
+    <div class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+      <table class="min-w-full text-sm text-gray-700">
+        <thead class="bg-gray-100 text-gray-600 uppercase text-xs">
+          <tr>
+            <th class="px-6 py-3">المريض</th>
+            <th class="px-6 py-3">التاريخ</th>
+            <th class="px-6 py-3">الوقت</th>
+            <th class="px-6 py-3 text-right">الحالة</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if upcoming_appointments %}
+            {% for a in upcoming_appointments %}
+              <tr class="border-t hover:bg-gray-50 transition">
+                <td class="px-6 py-3">{{ a.patient.name }}</td>
+                <td class="px-6 py-3">{{ a.date|date:"Y-m-d" }}</td>
+                <td class="px-6 py-3">{{ a.time|time:"H:i" }}</td>
+                <td class="px-6 py-3 text-right">
+                  <span class="px-3 py-1 rounded-full text-xs font-medium 
+                    {% if a.status == 'تمت الزيارة' %}bg-green-100 text-green-700
+                    {% elif a.status == 'ألغيت' %}bg-red-100 text-red-700
+                    {% else %}bg-blue-100 text-blue-700{% endif %}">
+                    {{ a.status }}
+                  </span>
+                </td>
+              </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="4" class="text-center py-6 text-gray-500">
+                لا توجد مواعيد قادمة
+              </td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
 </div>
 
-<!-- 🌞 سكريبت الترحيب -->
-<script>
-  function updateGreeting() {
-    const now = new Date();
-    const hour = now.getHours();
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-
-    const isMorning = hour >= 5 && hour < 12;
-    const isEvening = hour >= 18 || hour < 5;
-
-    const greetingText = document.getElementById("greetingText");
-    const dateText = document.getElementById("dateText");
-    const iconArea = document.getElementById("iconArea");
-    const quoteText = document.getElementById("quoteText");
-    const card = document.getElementById("greetingCard");
-
-    const days = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
-    const months = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
-
-    const todayStr = `${days[now.getDay()]}، ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} — ${hour}:${minutes}`;
-    dateText.textContent = todayStr;
-
-    if (isMorning) {
-      greetingText.textContent = `🌅 صباح الخير، {{ request.user.first_name|default:request.user.username }}!`;
-      iconArea.textContent = "☀️";
-      card.className = "relative overflow-hidden rounded-3xl border border-yellow-200 shadow bg-gradient-to-r from-yellow-50 to-blue-50 p-6 flex items-center justify-between transition-all";
-      quoteText.textContent = "نتمنى لك يومًا مثمرًا ومليئًا بالنشاط 👨‍⚕️";
-    } else if (isEvening) {
-      greetingText.textContent = `🌙 مساء الخير، {{ request.user.first_name|default:request.user.username }}!`;
-      iconArea.textContent = "🌙";
-      card.className = "relative overflow-hidden rounded-3xl border border-gray-300 shadow bg-gradient-to-r from-blue-100 to-gray-200 p-6 flex items-center justify-between transition-all";
-      quoteText.textContent = "نتمنى لك أمسية هادئة بعد يوم مليء بالعمل 🌙";
-    } else {
-      greetingText.textContent = `👋 أهلاً، {{ request.user.first_name|default:request.user.username }}!`;
-      iconArea.textContent = "☁️";
-      card.className = "relative overflow-hidden rounded-3xl border border-gray-200 shadow bg-gradient-to-r from-blue-50 to-gray-50 p-6 flex items-center justify-between transition-all";
-      quoteText.textContent = "استمر في إنجازاتك 💪";
-    }
-  }
-
-  updateGreeting();
-  setInterval(updateGreeting, 60000);
-</script>
+<style>
+.shortcut-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.9rem 0.5rem;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: 1px solid;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.shortcut-btn:hover {
+  transform: translateY(-1px);
+  background-color: rgba(59,130,246,0.05);
+}
+</style>
 
 {% endblock %}

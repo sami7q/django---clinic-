@@ -84,7 +84,13 @@
       <tbody class="divide-y divide-gray-100">
         {% for invoice in invoices %}
         <tr class="hover:bg-gray-50 transition">
-          <td class="px-6 py-3 text-gray-600 font-medium">#{{ invoice.invoice_number }}</td>
+          <td class="px-6 py-3 text-gray-600 font-medium">
+            {% if filter_label == 'جميع الفواتير' %}
+              #{{ forloop.counter }}
+            {% else %}
+              #{{ invoice.invoice_number }}
+            {% endif %}
+          </td>
           <td class="px-6 py-3 text-gray-800 font-medium">{{ invoice.patient.name }}</td>
           <td class="px-6 py-3 font-semibold text-green-700">{{ invoice.paid_amount|floatformat:0 }} د.ع</td>
           <td class="px-6 py-3">

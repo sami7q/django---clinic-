@@ -1,96 +1,96 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div x-data="appointmentsList()" x-init="init()" class="p-8 max-w-6xl mx-auto bg-white rounded-3xl shadow-lg border border-gray-100">
+<div x-data="appointmentsList()" x-init="init()" class="p-6 max-w-6xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-200">
 
-  <!-- 🧭 العنوان + الأزرار -->
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-8">
-    <h1 class="text-2xl font-bold text-blue-800">
-      {% if show_all %}📜 جميع المواعيد{% else %}📅 المواعيد القادمة{% endif %}
+  <!-- 🔹 العنوان + الأزرار -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
+    <h1 class="text-xl font-bold text-blue-700 tracking-tight">
+      {% if show_all %}جميع المواعيد{% else %}المواعيد القادمة{% endif %}
     </h1>
 
     <div class="flex gap-2">
       {% if not show_all %}
         <a href="{% url 'appointments:all' %}"
-           class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg border hover:bg-gray-200 transition text-sm">
-          📜 جميع المواعيد
+           class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md border hover:bg-gray-200 transition text-xs font-medium">
+          جميع المواعيد
         </a>
       {% else %}
         <a href="{% url 'appointments:list' %}"
-           class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg border hover:bg-gray-200 transition text-sm">
-          📅 المواعيد القادمة
+           class="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md border hover:bg-gray-200 transition text-xs font-medium">
+          المواعيد القادمة
         </a>
       {% endif %}
       <a href="{% url 'appointments:create' %}"
-         class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 text-sm transition">
+         class="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-xs font-medium shadow-sm">
         + إضافة موعد
       </a>
     </div>
   </div>
 
-  <!-- 🔍 شريط الفلترة -->
-  <div class="bg-gray-50 rounded-2xl border border-gray-200 p-4 mb-6 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+  <!-- 🔍 شريط الفلاتر -->
+  <div class="bg-gray-50 rounded-xl border border-gray-200 p-4 mb-5 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
     <input type="text"
            x-model="searchQuery"
-           placeholder="🔍 ابحث بالاسم أو رقم الهاتف..."
-           class="w-full md:w-1/3 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100 outline-none">
+           placeholder="ابحث بالاسم أو رقم الهاتف..."
+           class="w-full md:w-1/3 border border-gray-300 rounded-md px-3 py-1.5 text-xs focus:border-blue-500 focus:ring focus:ring-blue-100 outline-none">
 
     <div class="flex gap-2">
-      <!-- ✅ الحالات الجديدة -->
-      <select x-model="statusFilter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-100">
+      <select x-model="statusFilter" class="border border-gray-300 rounded-md px-3 py-1.5 text-xs focus:border-blue-500 focus:ring-blue-100">
         <option value="">كل الحالات</option>
-        <option value="لم يحن الموعد">📍 لم يحن الموعد</option>
-        <option value="تمت الزيارة">✅ تمت الزيارة</option>
-        <option value="ألغيت">❌ ألغيت</option>
+        <option value="لم يحن الموعد">لم يحن الموعد</option>
+        <option value="تمت الزيارة">تمت الزيارة</option>
+        <option value="ألغيت">ألغيت</option>
       </select>
 
-      <select x-model="dateFilter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-100">
+      <select x-model="dateFilter" class="border border-gray-300 rounded-md px-3 py-1.5 text-xs focus:border-blue-500 focus:ring-blue-100">
         <option value="">كل الأيام</option>
-        <option value="today">📅 اليوم</option>
-        <option value="tomorrow">🗓️ غدًا</option>
-        <option value="week">📆 هذا الأسبوع</option>
-        <option value="month">🗓️ هذا الشهر</option>
+        <option value="today">اليوم</option>
+        <option value="tomorrow">غدًا</option>
+        <option value="week">هذا الأسبوع</option>
+        <option value="month">هذا الشهر</option>
       </select>
     </div>
   </div>
 
   <!-- 📋 جدول المواعيد -->
-  <div class="overflow-x-auto rounded-2xl border border-gray-200 bg-white">
-    <table class="min-w-full text-sm text-gray-700">
-      <thead class="bg-blue-50 text-blue-800 text-xs uppercase font-semibold border-b">
+  <div class="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+    <table class="min-w-full text-xs text-gray-700">
+      <thead class="bg-gray-100 text-gray-700 uppercase border-b">
         <tr>
           <th class="px-5 py-3 text-right">المريض</th>
           <th class="px-5 py-3 text-right">التاريخ</th>
           <th class="px-5 py-3 text-right">الوقت</th>
           <th class="px-5 py-3 text-right">الحالة</th>
           <th class="px-5 py-3 text-right">السبب</th>
-          <th class="px-5 py-3 text-center">إجراءات</th>
+          <th class="px-5 py-3 text-center">الإجراءات</th>
         </tr>
       </thead>
+
       <tbody>
         <template x-if="filteredAppointments().length > 0">
           <template x-for="appt in filteredAppointments()" :key="appt.id">
-            <tr class="border-b hover:bg-blue-50/50 transition" :class="{'opacity-60': isPast(appt)}">
-              <td class="px-5 py-3 font-semibold text-gray-800" x-text="appt.patient"></td>
+            <tr class="border-b hover:bg-gray-50 transition" :class="{'opacity-60': isPast(appt)}">
+              <td class="px-5 py-3 font-medium text-gray-800" x-text="appt.patient"></td>
               <td class="px-5 py-3" x-text="formatDate(appt.date)"></td>
               <td class="px-5 py-3" x-text="formatTime(appt.time)"></td>
               <td class="px-5 py-3">
-                <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full border"
+                <span class="inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full border"
                       :class="statusClass(appt.status)">
                   <span class="w-2 h-2 rounded-full" :class="dotClass(appt.status)"></span>
                   <span x-text="appt.status"></span>
                 </span>
               </td>
-              <td class="px-5 py-3 text-gray-600 truncate max-w-[200px]" x-text="appt.reason || '—'"></td>
+              <td class="px-5 py-3 text-gray-600 truncate max-w-[160px]" x-text="appt.reason || '—'"></td>
               <td class="px-5 py-3 text-center">
                 <div class="flex justify-center gap-2">
                   <a :href="appt.edit_url"
-                     class="px-3 py-1.5 bg-blue-500/10 text-blue-700 border border-blue-300 rounded-lg text-xs font-medium hover:bg-blue-500 hover:text-white transition">
-                     ✏️ تعديل
+                     class="px-3 py-1 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-xs hover:bg-blue-600 hover:text-white transition font-medium">
+                    تعديل
                   </a>
                   <a :href="appt.delete_url"
-                     class="px-3 py-1.5 bg-red-500/10 text-red-700 border border-red-300 rounded-lg text-xs font-medium hover:bg-red-500 hover:text-white transition">
-                     🗑️ حذف
+                     class="px-3 py-1 bg-red-50 text-red-700 border border-red-200 rounded-md text-xs hover:bg-red-600 hover:text-white transition font-medium">
+                    حذف
                   </a>
                 </div>
               </td>
@@ -100,7 +100,7 @@
 
         <template x-if="filteredAppointments().length === 0">
           <tr>
-            <td colspan="6" class="text-center text-gray-500 py-6 text-sm">لا توجد مواعيد مطابقة للبحث أو الفلاتر الحالية.</td>
+            <td colspan="6" class="text-center text-gray-500 py-6 text-xs">لا توجد مواعيد مطابقة للبحث أو الفلاتر الحالية.</td>
           </tr>
         </template>
       </tbody>
@@ -158,11 +158,10 @@ function appointmentsList() {
       return `${hour}:${m} ${suffix}`;
     },
 
-    // ✅ الحالات الجديدة
     statusClass(status) {
-      if (status === 'لم يحن الموعد') return 'bg-blue-50 text-blue-800 border-blue-200';
-      if (status === 'تمت الزيارة') return 'bg-green-50 text-green-800 border-green-200';
-      if (status === 'ألغيت') return 'bg-red-50 text-red-800 border-red-200';
+      if (status === 'لم يحن الموعد') return 'bg-blue-50 text-blue-700 border-blue-200';
+      if (status === 'تمت الزيارة') return 'bg-green-50 text-green-700 border-green-200';
+      if (status === 'ألغيت') return 'bg-red-50 text-red-700 border-red-200';
       return 'bg-gray-50 text-gray-700 border-gray-200';
     },
 
@@ -181,25 +180,18 @@ function appointmentsList() {
         const matchStatus = !this.statusFilter || a.status === this.statusFilter;
         let matchDate = true;
 
-        // اليوم
         if (this.dateFilter === 'today') {
           const today = new Date(this.now.getFullYear(), this.now.getMonth(), this.now.getDate());
           matchDate = apptDate.toDateString() === today.toDateString();
-
-        // غدًا
         } else if (this.dateFilter === 'tomorrow') {
           const tomorrow = new Date(this.now);
           tomorrow.setDate(this.now.getDate() + 1);
           matchDate = apptDate.toDateString() === tomorrow.toDateString();
-
-        // هذا الأسبوع
         } else if (this.dateFilter === 'week') {
           const start = new Date(this.now);
           const end = new Date(start);
           end.setDate(start.getDate() + 7);
           matchDate = apptDate >= start && apptDate < end;
-
-        // هذا الشهر
         } else if (this.dateFilter === 'month') {
           matchDate = apptDate.getMonth() === this.now.getMonth() && apptDate.getFullYear() === this.now.getFullYear();
         }

@@ -2,71 +2,80 @@
 {% load static %}
 {% block content %}
 
-<div x-data="patientsList()" x-init="init()" class="p-6 max-w-6xl mx-auto">
+<div x-data="patientsList()" x-init="init()" class="p-6 max-w-6xl mx-auto space-y-6">
 
-  <!-- 🧭 العنوان + زر الإضافة -->
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">قائمة المرضى</h1>
+  <!-- العنوان + زر الإضافة -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <h1 class="text-xl font-bold text-blue-700">قائمة المرضى</h1>
 
     <a href="{% url 'patients:create' %}" 
-       class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium">
+       class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition text-xs font-medium shadow-sm">
       + إضافة مريض جديد
     </a>
   </div>
 
-  <!-- 🔍 أدوات التصفية -->
-  <div class="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm mb-6 flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-    <input type="text"
-           x-model="searchQuery"
-           placeholder="🔍 ابحث بالاسم أو رقم الهاتف..."
-           class="w-full md:w-1/3 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:border-blue-500 focus:ring focus:ring-blue-100 outline-none">
+  <!-- شريط الفلاتر -->
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-4 flex flex-wrap items-center justify-between gap-3">
+    
+    <!-- مربع البحث -->
+    <div class="relative flex-1 min-w-[200px]">
+      <input type="text"
+             x-model="searchQuery"
+             placeholder="ابحث بالاسم أو رقم الهاتف..."
+             class="w-full border border-gray-300 rounded-md pl-9 pr-3 py-1.5 text-xs focus:border-blue-500 focus:ring focus:ring-blue-100 outline-none">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1010.5 18a7.5 7.5 0 006.15-3.35z" />
+      </svg>
+    </div>
 
+    <!-- الفلاتر -->
     <div class="flex gap-2">
-      <select x-model="genderFilter" class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-blue-100">
+      <select x-model="genderFilter"
+              class="border border-gray-300 rounded-md px-3 py-1.5 text-xs focus:border-blue-500 focus:ring-blue-100">
         <option value="">كل المرضى</option>
         <option value="ذكر">الذكور</option>
         <option value="أنثى">الإناث</option>
       </select>
 
       <button @click="resetFilters"
-              class="px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 transition">
-        🔄 إعادة تعيين
+              class="px-3 py-1.5 text-xs bg-gray-100 border border-gray-200 rounded-md hover:bg-gray-200 text-gray-700 transition">
+        إعادة تعيين
       </button>
     </div>
   </div>
 
-  <!-- 📋 جدول المرضى -->
-  <div class="bg-white shadow rounded-2xl overflow-hidden border border-gray-200">
-    <table class="min-w-full text-sm text-right">
-      <thead class="bg-gray-100 text-gray-700 text-xs uppercase">
+  <!-- جدول المرضى -->
+  <div class="bg-white shadow-sm rounded-xl overflow-hidden border border-gray-200">
+    <table class="min-w-full text-[13px] text-gray-700 text-right">
+      <thead class="bg-gray-50 text-gray-600 uppercase text-[11px] font-semibold border-b">
         <tr>
-          <th class="px-6 py-3">الاسم</th>
-          <th class="px-6 py-3">العمر</th>
-          <th class="px-6 py-3">الجنس</th>
-          <th class="px-6 py-3">الهاتف</th>
-          <th class="px-6 py-3">التشخيص</th>
-          <th class="px-6 py-3">تاريخ التسجيل</th>
-          <th class="px-6 py-3 text-center">الإجراء</th>
+          <th class="px-5 py-2">الاسم</th>
+          <th class="px-5 py-2">العمر</th>
+          <th class="px-5 py-2">الجنس</th>
+          <th class="px-5 py-2">الهاتف</th>
+          <th class="px-5 py-2">التشخيص</th>
+          <th class="px-5 py-2">تاريخ التسجيل</th>
+          <th class="px-5 py-2 text-center">الإجراء</th>
         </tr>
       </thead>
 
-      <tbody class="divide-y divide-gray-100">
-        <template x-for="p in filteredPatients()" :key="p.id">
-          <tr class="hover:bg-gray-50 transition">
-            <td class="px-6 py-3 font-medium text-gray-900" x-text="p.name"></td>
-            <td class="px-6 py-3 text-gray-700" x-text="p.age"></td>
-            <td class="px-6 py-3 text-gray-700" x-text="p.gender || '—'"></td>
-            <td class="px-6 py-3 text-gray-700" x-text="p.phone || '—'"></td>
-            <td class="px-6 py-3 text-gray-700" x-text="p.diagnosis || '—'"></td>
-            <td class="px-6 py-3 text-gray-500" x-text="formatDate(p.created_at)"></td>
-            <td class="px-6 py-3 text-center">
+      <tbody>
+        <template x-for="p in paginatedPatients()" :key="p.id">
+          <tr class="border-t hover:bg-blue-50/40 transition">
+            <td class="px-5 py-2 font-medium text-gray-900" x-text="p.name"></td>
+            <td class="px-5 py-2" x-text="p.age"></td>
+            <td class="px-5 py-2" x-text="p.gender || '—'"></td>
+            <td class="px-5 py-2" x-text="p.phone || '—'"></td>
+            <td class="px-5 py-2 truncate max-w-[200px]" x-text="p.diagnosis || '—'"></td>
+            <td class="px-5 py-2 text-gray-500" x-text="formatDate(p.created_at)"></td>
+            <td class="px-5 py-2 text-center">
               <div class="flex justify-center gap-2">
                 <a :href="`/patients/${p.id}/view/`"
-                   class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">
+                   class="px-3 py-1 bg-blue-500/10 text-blue-700 border border-blue-300 rounded-md text-xs font-medium hover:bg-blue-500 hover:text-white transition">
                   عرض
                 </a>
                 <a :href="`/patients/${p.id}/delete/`"
-                   class="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+                   class="px-3 py-1 bg-red-500/10 text-red-700 border border-red-300 rounded-md text-xs font-medium hover:bg-red-500 hover:text-white transition">
                   حذف
                 </a>
               </div>
@@ -74,9 +83,9 @@
           </tr>
         </template>
 
-        <template x-if="filteredPatients().length === 0">
+        <template x-if="paginatedPatients().length === 0">
           <tr>
-            <td colspan="7" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="7" class="px-5 py-4 text-center text-gray-500 text-sm">
               لا توجد نتائج مطابقة.
             </td>
           </tr>
@@ -84,28 +93,52 @@
       </tbody>
     </table>
   </div>
+
+  <!-- أزرار التنقل بين الصفحات -->
+  <div class="flex justify-center items-center gap-3 mt-4 text-xs font-medium">
+    <button @click="prevPage" 
+            :disabled="currentPage === 1"
+            class="px-3 py-1 rounded-md border text-gray-700 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition">
+      ← السابق
+    </button>
+
+    <span class="text-gray-500">
+      الصفحة <span class="text-blue-600 font-semibold" x-text="currentPage"></span> من 
+      <span class="text-gray-600" x-text="totalPages"></span>
+    </span>
+
+    <button @click="nextPage"
+            :disabled="currentPage === totalPages"
+            class="px-3 py-1 rounded-md border text-gray-700 bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition">
+      التالي →
+    </button>
+  </div>
 </div>
 
-<!-- ⚙️ سكربت التصفية -->
+<!-- سكربت الفلترة + التصفح -->
 <script>
 function patientsList() {
   return {
     allPatients: {{ patients_json|safe }},
     searchQuery: '',
     genderFilter: '',
+    currentPage: 1,
+    perPage: 20,
 
     init() {},
 
     resetFilters() {
       this.searchQuery = '';
       this.genderFilter = '';
+      this.currentPage = 1;
     },
 
     filteredPatients() {
       const q = this.searchQuery.trim().toLowerCase();
       const g = this.genderFilter.trim().toLowerCase();
 
-      return this.allPatients.filter(p => {
+      // ✅ البحث والتصفية تتم هنا على كل المرضى
+      const filtered = this.allPatients.filter(p => {
         const matchSearch =
           !q ||
           (p.name && p.name.toLowerCase().includes(q)) ||
@@ -116,17 +149,40 @@ function patientsList() {
 
         return matchSearch && matchGender;
       });
+
+      // 🔄 إعادة الصفحة إلى الأولى عند تغير البحث
+      if (this.currentPage > Math.ceil(filtered.length / this.perPage)) {
+        this.currentPage = 1;
+      }
+
+      return filtered;
+    },
+
+    paginatedPatients() {
+      const start = (this.currentPage - 1) * this.perPage;
+      const end = start + this.perPage;
+      return this.filteredPatients().slice(start, end);
+    },
+
+    get totalPages() {
+      return Math.ceil(this.filteredPatients().length / this.perPage) || 1;
+    },
+
+    nextPage() {
+      if (this.currentPage < this.totalPages) this.currentPage++;
+    },
+
+    prevPage() {
+      if (this.currentPage > 1) this.currentPage--;
     },
 
     formatDate(iso) {
       const d = new Date(iso);
       const options = { year: 'numeric', month: 'short', day: 'numeric' };
-      // 👇 النتيجة: "Oct 24, 2025"
-      return d.toLocaleDateString('en-US', options);
+      return d.toLocaleDateString('ar-EG', options);
     }
   };
 }
 </script>
-
 
 {% endblock %}

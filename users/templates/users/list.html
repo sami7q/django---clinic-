@@ -1,50 +1,63 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="p-6">
+<div class="p-8 space-y-10">
 
-  <!-- 🧭 العنوان + زر الإضافة -->
-  <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
-    <h1 class="text-2xl font-bold text-blue-700 flex items-center gap-2">
-      👥 إدارة المستخدمين
-    </h1>
+  <!-- 🔹 العنوان + الزر -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <h1 class="text-2xl font-bold text-gray-800 tracking-tight">إدارة المستخدمين</h1>
 
     {% if request.user == main_user %}
       <a href="{% url 'users:create' %}" 
-         class="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition shadow-md text-sm font-medium">
-        ➕ إضافة مستخدم
+         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm font-medium shadow-sm">
+        + إضافة مستخدم
       </a>
     {% else %}
-      <button class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-200 text-gray-400 rounded-xl cursor-not-allowed text-sm">
-        🔒 إضافة مستخدم
+      <button class="px-4 py-2 bg-gray-200 text-gray-400 rounded-lg cursor-not-allowed text-sm font-medium shadow-sm">
+        إضافة مستخدم
       </button>
     {% endif %}
   </div>
 
+  <!-- 🧭 شريط المعلومات -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <p class="text-sm text-gray-500">عدد المستخدمين</p>
+      <p class="text-2xl font-bold text-blue-600 mt-1">{{ users|length }}</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <p class="text-sm text-gray-500">المستخدم النشط</p>
+      <p class="text-2xl font-bold text-green-600 mt-1">{{ active_users|default:"—" }}</p>
+    </div>
+    <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+      <p class="text-sm text-gray-500">المستخدم الرئيسي</p>
+      <p class="text-2xl font-bold text-gray-700 mt-1">{{ main_user.username }}</p>
+    </div>
+  </div>
+
   <!-- 📋 الجدول -->
-  <div class="overflow-x-auto bg-white border border-gray-100 rounded-2xl shadow-lg">
-    <table class="min-w-full text-sm text-gray-700">
-      <thead class="bg-gradient-to-l from-blue-50 to-blue-100 text-blue-700 uppercase text-xs font-semibold border-b">
+  <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+    <table class="min-w-full text-sm text-left">
+      <thead class="bg-gray-100 text-gray-700 text-xs uppercase border-b">
         <tr>
-          <th class="px-6 py-3 text-right">👤 الاسم</th>
-          <th class="px-6 py-3 text-right">📧 البريد الإلكتروني</th>
-          <th class="px-6 py-3 text-center">🛠️ صلاحية الإدارة</th>
-          <th class="px-6 py-3 text-center">⚙️ الحالة</th>
-          <th class="px-6 py-3 text-center">🧭 الإجراءات</th>
+          <th class="px-6 py-3">الاسم</th>
+          <th class="px-6 py-3">البريد الإلكتروني</th>
+          <th class="px-6 py-3 text-center">صلاحية الإدارة</th>
+          <th class="px-6 py-3 text-center">الحالة</th>
+          <th class="px-6 py-3 text-center">الإجراءات</th>
         </tr>
       </thead>
 
-      <tbody>
+      <tbody class="divide-y divide-gray-100">
         {% for user in users %}
-        <tr class="border-t hover:bg-blue-50/40 transition">
+        <tr class="hover:bg-gray-50 transition">
+          
           <!-- الاسم -->
-          <td class="px-6 py-3 font-medium flex items-center gap-2 text-gray-900">
+          <td class="px-6 py-3 font-medium text-gray-800">
             {% if user == main_user %}
-              <span class="text-blue-600 font-semibold flex items-center gap-1">
-                👑 {{ user.username }}
-              </span>
+              <span class="text-blue-600 font-semibold">{{ user.username }} (المستخدم الأساسي)</span>
             {% else %}
-              <span>{{ user.username }}</span>
+              {{ user.username }}
             {% endif %}
           </td>
 
@@ -54,51 +67,46 @@
           <!-- صلاحية الإدارة -->
           <td class="px-6 py-3 text-center">
             {% if user.is_staff %}
-              <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">نعم</span>
+              <span class="bg-blue-100 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full">نعم</span>
             {% else %}
-              <span class="bg-gray-100 text-gray-500 text-xs font-medium px-3 py-1 rounded-full shadow-sm">لا</span>
+              <span class="bg-gray-100 text-gray-500 text-xs font-medium px-3 py-1 rounded-full">لا</span>
             {% endif %}
           </td>
 
           <!-- الحالة -->
           <td class="px-6 py-3 text-center">
             {% if user.is_active %}
-              <span class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">نشط</span>
+              <span class="bg-green-100 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">نشط</span>
             {% else %}
-              <span class="bg-red-100 text-red-600 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">موقوف</span>
+              <span class="bg-red-100 text-red-600 text-xs font-semibold px-3 py-1 rounded-full">موقوف</span>
             {% endif %}
           </td>
 
           <!-- الإجراءات -->
-          <td class="px-6 py-3 text-center">
+          <td class="px-6 py-3 text-right space-x-2 rtl:space-x-reverse">
             {% if user == main_user %}
-              <span class="text-gray-400 italic text-xs">🔒 المستخدم الأساسي</span>
+              <span class="text-gray-400 italic text-xs">المستخدم الأساسي</span>
 
             {% elif request.user == main_user %}
-              <div class="flex justify-center gap-3">
-                <a href="{% url 'users:edit' user.id %}" 
-                   class="text-blue-600 hover:text-blue-800 transition text-sm" 
-                   title="تعديل المستخدم">
-                  ✏️
-                </a>
-
-                <a href="{% url 'users:change_password' user.id %}" 
-                   class="text-yellow-500 hover:text-yellow-600 transition text-sm" 
-                   title="تغيير كلمة المرور">
-                  🔑
-                </a>
-
-                <a href="{% url 'users:delete' user.id %}" 
-                   class="text-red-600 hover:text-red-700 transition text-sm"
-                   title="حذف المستخدم">
-                  🗑️
-                </a>
-              </div>
+              <a href="{% url 'users:edit' user.id %}" 
+                 class="inline-block px-3 py-1.5 text-sm bg-blue-50 text-blue-700 rounded-md border border-blue-200 hover:bg-blue-100 transition">
+                تعديل
+              </a>
+              <a href="{% url 'users:change_password' user.id %}" 
+                 class="inline-block px-3 py-1.5 text-sm bg-yellow-50 text-yellow-700 rounded-md border border-yellow-200 hover:bg-yellow-100 transition">
+                كلمة المرور
+              </a>
+              <a href="{% url 'users:delete' user.id %}" 
+                 class="inline-block px-3 py-1.5 text-sm bg-red-50 text-red-700 rounded-md border border-red-200 hover:bg-red-100 transition">
+                حذف
+              </a>
 
             {% elif request.user == user %}
               <a href="{% url 'users:change_password' user.id %}" 
-                 class="text-yellow-600 hover:text-yellow-700 text-sm font-medium"
-                 title="تغيير كلمتي">🔑 تغيير كلمتي</a>
+                 class="inline-block px-3 py-1.5 text-sm bg-yellow-50 text-yellow-700 rounded-md border border-yellow-200 hover:bg-yellow-100 transition">
+                 تغيير كلمتي
+              </a>
+
             {% else %}
               <span class="text-gray-400 text-xs italic">—</span>
             {% endif %}
@@ -106,12 +114,13 @@
         </tr>
         {% empty %}
         <tr>
-          <td colspan="5" class="text-center py-8 text-gray-500">🚫 لا يوجد مستخدمون بعد.</td>
+          <td colspan="5" class="text-center py-8 text-gray-500">لا يوجد مستخدمون بعد.</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
+
 </div>
 
 {% endblock %}

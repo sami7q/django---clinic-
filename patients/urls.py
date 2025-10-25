@@ -8,7 +8,8 @@ urlpatterns = [
     path('create_api/', views.patient_create_api, name='create_api'),          # API لإضافة مريض من داخل صفحة الموعد
     path('', views.patients_list, name='list'),                               # قائمة المرضى
     path('create/', views.create_patient, name='create'),                      # إنشاء مريض جديد يدويًا
-    path('<int:pk>/view/', views.patient_view, name='view'),                   # عرض بطاقة المريض
+    path('<int:pk>/view/', views.patient_view, name='view'),
+    path('<int:pk>/edit/', views.edit_patient, name='edit'),                                      # عرض بطاقة المريض
     path('<int:pk>/delete/', views.delete_patient, name='delete'),             # حذف مريض
     path('<int:id>/', views.patient_detail, name='detail'),                    # عرض تفاصيل المريض
 ]
