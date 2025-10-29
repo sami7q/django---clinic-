@@ -25,10 +25,8 @@ urlpatterns = [
     path("patients/", include(("patients.urls", "patients"), namespace="patients")),
     path("appointments/", include(("appointments.urls", "appointments"), namespace="appointments")),
     path("invoices/", include(("invoices.urls", "invoices"), namespace="invoices")),
-
-    # 👥 قسم المستخدمين — تم إصلاح التكرار هنا
     path("users/", include(("users.urls", "users"), namespace="users")),
 
-    # 🔐 نظام تسجيل الدخول والخروج الافتراضي من Django
+    # 🔐 تسجيل الدخول والخروج
     path("auth/", include("django.contrib.auth.urls")),
 ]
